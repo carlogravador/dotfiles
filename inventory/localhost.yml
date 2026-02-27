@@ -1,0 +1,8 @@
+# Ansible inventory file
+# Targets the local machine using a local connection (no SSH required)
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+      # Don't use Python from a virtualenv; use the system Python
+      ansible_python_interpreter: "{{ ansible_playbook_python }}"

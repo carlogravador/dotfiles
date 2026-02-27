@@ -1,0 +1,73 @@
+---
+# Install Neovim and its dependencies.
+#
+# Ansible Concepts:
+#   - "when" is a conditional. The task only runs if the condition is true.
+#   - "ansible_os_family" is a fact gathered automatically (e.g., "Darwin" for macOS,
+#     "Debian" for Ubuntu/Debian). You can see all facts with: ansible localhost -m setup
+#   - "community.general.homebrew" is a module for managing Homebrew packages.
+#   - "ansible.builtin.apt" is a module for managing apt packages (Debian/Ubuntu).
+#   - "become: true" means "run as root" (equivalent to sudo). Required for apt.
+#   - "loop" iterates over a list, running the task once per item.
+#     The current item is available as {{ item }}.
+
+# --- macOS (Homebrew) ---
+
+- name: Install Neovim and dependencies via Homebrew (macOS)
+  community.general.homebrew:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - neovim
+    - ripgrep       # Fast regex search (used by fzf-lua live grep)
+    - fd            # Fast file finder (used by fzf-lua file finder)
+    - fzf           # Fuzzy finder binary (used by fzf-lua)
+    - node          # Required by some LSP servers and Mason packages
+    - tree-sitter   # Parser generator (used by nvim-treesitter)
+    - cmake         # Build tool needed for some treesitter parsers
+    - unzip         # Needed by Mason to install some LSP servers
+  when: ansible_os_family == "Darwin"
+
+# --- Ubuntu / Debian (apt) ---
+
+# Neovim in Ubuntu's default repos is often outdated.
+# We add the official Neovim PPA to get a recent stable version.
+
+- name: Add Neovim PPA (Ubuntu/Debian)
+  ansible.builtin.apt_repository:
+    repo: ppa:neovim-ppa/stable
+    state: present
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Install Neovim and dependencies via apt (Ubuntu/Debian)
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - neovim
+    - ripgrep
+    - fd-find       # fd is packaged as "fd-find" on Debian/Ubuntu
+    - fzf
+    - nodejs
+    - npm
+    - build-essential  # C compiler, make, etc. (needed for treesitter parsers)
+    - cmake
+    - unzip
+    - curl
+  become: true
+  when: ansible_os_family == "Debian"
+
+# On Debian/Ubuntu, fd is installed as "fdfind". Create a symlink so
+# tools that expect the "fd" binary name work correctly.
+- name: Symlink fdfind to fd (Ubuntu/Debian)
+  ansible.builtin.file:
+    src: /usr/bin/fdfind
+    dest: /usr/local/bin/fd
+    state: link
+  become: true
+  when: ansible_os_family == "Debian"
+  # "ignore_errors" prevents failure if the symlink already exists
+  # or if fdfind is not at the expected path.
+  ignore_errors: true

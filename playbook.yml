@@ -1,0 +1,24 @@
+---
+# Main playbook for provisioning dotfiles
+#
+# Usage:
+#   ansible-playbook playbook.yml            # Run all roles
+#   ansible-playbook playbook.yml --tags nvim # Run only the nvim role
+#
+# Ansible Concepts:
+#   - A "playbook" is a YAML file describing a set of tasks to run.
+#   - "hosts" specifies which machines to target (here, localhost).
+#   - "roles" are reusable bundles of tasks, files, and variables.
+#   - Each role in the list below maps to a directory under roles/.
+
+- name: Provision dotfiles
+  hosts: localhost
+  # Gather system facts (OS, architecture, etc.) so we can
+  # write OS-specific tasks using `ansible_os_family`, `ansible_distribution`, etc.
+  gather_facts: true
+
+  roles:
+    # Each role is self-contained: it installs the tool and deploys its config.
+    # To add a new tool later, create roles/<tool>/ and add it here.
+    - role: nvim
+      tags: [nvim]

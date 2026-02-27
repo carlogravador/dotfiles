@@ -1,0 +1,31 @@
+---
+# Deploy Neovim configuration files.
+#
+# Ansible Concepts:
+#   - "ansible.builtin.file" manages files and directories (create, delete, symlink).
+#   - "state: directory" ensures a directory exists (creates it if missing).
+#   - "state: link" creates a symbolic link. "src" is the target, "dest" is the link path.
+#   - "role_path" is a magic variable that resolves to the role's root directory
+#     (e.g., /path/to/dotfiles/roles/nvim). This makes paths portable.
+#   - We symlink the entire nvim config directory rather than copying it.
+#     This means edits in the repo are immediately reflected — no re-run needed.
+
+- name: Ensure ~/.config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config"
+    state: directory
+    mode: "0755"
+
+# Remove any existing nvim config (file or directory) so the symlink
+# can be created cleanly. Without this, the symlink task would fail
+# if ~/.config/nvim already exists as a regular directory.
+- name: Remove existing nvim config if present
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/nvim"
+    state: absent
+
+- name: Symlink nvim config from dotfiles repo
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/nvim"
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    state: link
