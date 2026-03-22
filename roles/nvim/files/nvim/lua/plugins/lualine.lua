@@ -21,19 +21,10 @@ return {
   },
   event = "VeryLazy",  -- Load after UI is ready (doesn't block startup)
   config = function()
-
-    local function displayRow()
-        return "row: %l/%L"
-    end
-
-    local function displayColumn()
-        return "col: %c"
-    end
-
     require("lualine").setup({
       options = {
         -- Use a built-in theme (no external colorscheme dependency)
-        theme = "dracula",
+        -- theme = "dracula",
         -- Use simple ASCII separators (works in any terminal)
         component_separators = { left = "|", right = "|" },
         section_separators = { left = "", right = "" },
@@ -47,46 +38,63 @@ return {
       sections = {
         lualine_a = { "mode" },
         lualine_b = {
-        --   "branch",
+          -- "branch",
           -- "diff",
         },
         lualine_c = {
           { "filename", path = 1 },  -- path=1 shows relative path
-          {"diagnostics"}
+          { "diagnostics" },
         },
         -- lualine_x = {
         --   "diagnostics",
         --   "filetype",
         -- },
         lualine_x = {
-            -- {
-            --     'searchcount',
-            --     maxcount = 999999,
-            --     timeout = 500,
-            -- },
-            {'encoding'},
-            {'fileformat'},
-            {'filetype'},
+          -- Show OpenCode agent status (idle, busy, etc.) when connected.
+          -- The statusline function is provided by opencode.nvim and returns
+          -- an empty string when OpenCode is not running.
+          {
+            function()
+              local ok, opencode = pcall(require, "opencode")
+              if ok and opencode.statusline then
+                return opencode.statusline()
+              end
+              return ""
+            end,
+            cond = function()
+              local ok, opencode = pcall(require, "opencode")
+              if ok and opencode.statusline then
+                return opencode.statusline() ~= ""
+              end
+              return false
+            end,
+          },
         },
-        lualine_y = {},  -- Empty
+        lualine_y = {
+          { "encoding" },
+          { "fileformat" },
+          { "filetype" },
+        },
         -- lualine_y = { "progress" },  -- Percentage through the file
-
         lualine_z = {
           {
-            displayRow
+            function()
+              return "row: %l/%L"
+            end,
           },
           {
-            displayColumn
-          }
-        }
+            function()
+              return "col: %c"
+            end,
+          },
+        },
         -- lualine_z = { "location" },  -- Line:Column
       },
       extensions = {
         "nvim-tree",
         "fzf",
         "quickfix",
-        "nvim-tree"
-      }
+      },
     })
   end,
 }

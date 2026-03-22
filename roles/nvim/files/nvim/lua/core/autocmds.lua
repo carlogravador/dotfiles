@@ -25,17 +25,17 @@ autocmd("TextYankPost", {
 
 -- Restore cursor position when re-opening a file
 -- Neovim remembers where you were and jumps back to that line.
-autocmd("BufReadPost", {
-  group = augroup("restore_cursor", { clear = true }),
-  callback = function()
-    local mark = vim.api.nvim_buf_get_mark(0, '"')
-    local line_count = vim.api.nvim_buf_line_count(0)
-    if mark[1] > 0 and mark[1] <= line_count then
-      pcall(vim.api.nvim_win_set_cursor, 0, mark)
-    end
-  end,
-  desc = "Restore cursor position on file open",
-})
+-- autocmd("BufReadPost", {
+--   group = augroup("restore_cursor", { clear = true }),
+--   callback = function()
+--     local mark = vim.api.nvim_buf_get_mark(0, '"')
+--     local line_count = vim.api.nvim_buf_line_count(0)
+--     if mark[1] > 0 and mark[1] <= line_count then
+--       pcall(vim.api.nvim_win_set_cursor, 0, mark)
+--     end
+--   end,
+--   desc = "Restore cursor position on file open",
+-- })
 
 -- Auto-resize splits when the terminal window is resized
 autocmd("VimResized", {
@@ -52,13 +52,3 @@ autocmd("BufWritePre", {
   desc = "Remove trailing whitespace on save",
 })
 
--- Close certain filetypes with just "q" (help, man pages, quickfix, etc.)
-autocmd("FileType", {
-  group = augroup("close_with_q", { clear = true }),
-  pattern = { "help", "man", "qf", "lspinfo", "notify", "checkhealth" },
-  callback = function(event)
-    vim.bo[event.buf].buflisted = false
-    vim.keymap.set("n", "q", "<cmd>close<CR>", { buffer = event.buf, silent = true })
-  end,
-  desc = "Close certain windows with q",
-})

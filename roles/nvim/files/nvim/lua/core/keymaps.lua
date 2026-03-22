@@ -32,17 +32,17 @@ map("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window width"
 map("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
 
 -- ── Buffers ──────────────────────────────────────────────────
-map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
-map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
-map("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
+-- map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
+-- map("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
+-- map("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
 
 -- ── Quality of life ─────────────────────────────────────────
 -- Clear search highlight with Escape
 map("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
 
 -- Stay in visual mode when indenting
-map("v", "<", "<gv", { desc = "Indent left and reselect" })
-map("v", ">", ">gv", { desc = "Indent right and reselect" })
+-- map("v", "<", "<gv", { desc = "Indent left and reselect" })
+-- map("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 -- Move selected lines up/down in visual mode
 map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })

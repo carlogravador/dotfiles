@@ -144,21 +144,6 @@ return {
       -- "request = launch" means start a new process.
       -- "request = attach" means connect to an already-running process.
 
-      -- Rust
-      dap.configurations.rust = {
-        {
-          name = "Launch (Rust)",
-          type = "codelldb",
-          request = "launch",
-          -- Prompt for the path to the executable
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/target/debug/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopOnEntry = false,
-        },
-      }
-
       -- C
       dap.configurations.c = {
         {

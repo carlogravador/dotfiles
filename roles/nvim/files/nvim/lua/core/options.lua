@@ -11,11 +11,16 @@ opt.number = true         -- Show absolute line number on current line
 opt.relativenumber = true -- Show relative line numbers (makes j/k jumps easy)
 
 -- Tabs & indentation
+-- Global defaults: 4-space indentation with spaces (no tabs).
+-- Filetype overrides live in ftplugin/ (e.g., Lua uses 2 spaces).
 opt.tabstop = 4           -- Number of spaces a <Tab> character displays as
 opt.shiftwidth = 4        -- Number of spaces used for each step of (auto)indent
 opt.softtabstop = 4       -- Number of spaces a <Tab> keypress inserts
 opt.expandtab = true      -- Convert tabs to spaces
-opt.smartindent = true    -- Auto-indent new lines based on syntax
+opt.autoindent = true     -- Copy indent from current line when starting a new line
+-- Note: smartindent and cindent are intentionally omitted.
+-- Treesitter's indentexpr (see plugins/treesitter.lua) handles language-aware
+-- indentation. For filetypes without a treesitter parser, autoindent is sufficient.
 
 -- Line wrapping
 opt.wrap = false          -- Don't wrap long lines (scroll horizontally instead)
@@ -27,7 +32,7 @@ opt.hlsearch = true       -- Highlight all search matches
 opt.incsearch = true      -- Show matches as you type the search pattern
 
 -- Appearance
-opt.termguicolors = true  -- Enable 24-bit RGB colors in the terminal
+-- opt.termguicolors = true  -- Enable 24-bit RGB colors in the terminal
 opt.signcolumn = "yes"    -- Always show the sign column (prevents text shifting)
 opt.cursorline = true     -- Highlight the line the cursor is on
 opt.colorcolumn = "100"   -- Show a vertical guide at column 100

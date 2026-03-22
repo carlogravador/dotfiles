@@ -44,7 +44,8 @@ return {
         -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
         ensure_installed = {
           "lua_ls",          -- Lua (for editing Neovim config)
-          "clangd",          -- C / C++
+          -- "clangd",          -- C / C++
+          "copilot",
         },
         -- Automatically set up servers installed via Mason
         automatic_installation = true,
@@ -110,14 +111,14 @@ return {
           -- Actions
           map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
           map({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code action")
-          map("n", "<leader>f", function()
-            vim.lsp.buf.format({ async = true })
-          end, "Format file")
+          -- map("n", "<leader>f", function()
+          --   vim.lsp.buf.format({ async = true })
+          -- end, "Format file")
 
           -- Diagnostics
           map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
           map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-          map("n", "<leader>e", vim.diagnostic.open_float, "Show diagnostic message")
+          map("n", "<leader>se", vim.diagnostic.open_float, "Show diagnostic message")
           map("n", "<leader>dl", vim.diagnostic.setloclist, "Diagnostics to location list")
         end,
       })

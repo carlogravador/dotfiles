@@ -39,6 +39,8 @@ require("lazy").setup({
   { import = "plugins.nvim-tree" },
   { import = "plugins.lualine" },
   { import = "plugins.dap" },
+  { import = "plugins.ai" },
+  { import = "plugins.mini" },
 }, {
   -- lazy.nvim configuration options
   install = {

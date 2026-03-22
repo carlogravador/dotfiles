@@ -18,24 +18,32 @@ return {
 
     fzf.setup({
       -- Use a "borderless" profile for a clean look, then override as needed
-      "default-title",
+      "fzf-vim",
       winopts = {
         height = 0.85,
         width = 0.80,
         row = 0.35,
         preview = {
+          hidden = false,
+          default = "bat",
           layout = "flex",       -- Auto-switch between horizontal/vertical preview
           flip_columns = 120,    -- Switch to vertical preview if window < 120 cols
         },
       },
-      files = {
-        -- Use fd for file finding (faster than find, respects .gitignore)
-        fd_opts = "--type f --hidden --follow --exclude .git",
+      keymap = {
+        fzf = {
+          ["ctrl-y"] = "preview-up",
+          ["ctrl-e"] = "preview-down",
+        }
       },
-      grep = {
-        -- Use ripgrep for searching (fast, respects .gitignore)
-        rg_opts = "--column --line-number --no-heading --color=always --smart-case",
-      },
+      -- files = {
+      --   -- Use fd for file finding (faster than find, respects .gitignore)
+      --   fd_opts = "--type f --hidden --follow --exclude .git",
+      -- },
+      -- grep = {
+      --   -- Use ripgrep for searching (fast, respects .gitignore)
+      --   rg_opts = "--column --line-number --no-heading --color=always --smart-case",
+      -- },
     })
 
     -- ── Keymaps ──────────────────────────────────────────────

@@ -17,9 +17,11 @@ return {
     "hrsh7th/cmp-nvim-lsp",     -- LSP completion source
     "hrsh7th/cmp-buffer",       -- Buffer words source
     "hrsh7th/cmp-path",         -- File path source
+    "hrsh7th/cmp-nvim-lsp-signature-help",
     "L3MON4D3/LuaSnip",        -- Snippet engine
     "saadparwaiz1/cmp_luasnip", -- Snippet completion source
     "rafamadriz/friendly-snippets", -- Collection of common snippets
+    "onsails/lspkind.nvim", -- vs-code like pictograms
   },
   config = function()
     local cmp = require("cmp")
@@ -51,45 +53,65 @@ return {
       -- ── Key mappings ───────────────────────────────────────
       mapping = cmp.mapping.preset.insert({
         -- Navigate the completion menu
+        ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
+        ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
         ["<C-n>"] = cmp.mapping.select_next_item(),          -- Next item
         ["<C-p>"] = cmp.mapping.select_prev_item(),          -- Previous item
 
         -- Scroll documentation window
         ["<C-b>"] = cmp.mapping.scroll_docs(-4),             -- Scroll up
         ["<C-f>"] = cmp.mapping.scroll_docs(4),              -- Scroll down
+        ["<C-e>"] = cmp.mapping.scroll_docs(1),
+        ["<C-y>"] = cmp.mapping.scroll_docs(-1),
 
         -- Trigger completion manually (usually auto-triggers)
         ["<C-Space>"] = cmp.mapping.complete(),
 
-        -- Cancel completion
-        ["<C-e>"] = cmp.mapping.abort(),
-
         -- Confirm selection
         -- "select = false" means you must explicitly pick an item;
         -- pressing Enter without selecting does a normal newline.
-        ["<CR>"] = cmp.mapping.confirm({ select = false }),
+        -- ["<CR>"] = cmp.mapping.confirm({ select = false }),
+        ["<CR>"] = cmp.mapping.confirm({
+          behavior = cmp.ConfirmBehavior.Replace,
+          select = true,
+        }),
 
-        -- Tab: accept completion or jump to next snippet placeholder
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          elseif luasnip.expand_or_jumpable() then
-            luasnip.expand_or_jump()
-          else
-            fallback()  -- Insert a literal Tab character
-          end
-        end, { "i", "s" }),
-
-        -- Shift-Tab: reverse of Tab
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
+        -- ['<Tab>'] = cmp.mapping(function(fallback)
+        --     if cmp.visible() then
+        --         if #cmp.get_entries() == 1 then
+        --             cmp.confirm({ select = true })
+        --         else
+        --             cmp.select_next_item()
+        --         end
+        --     elseif luasnip.expand_or_jumpable() then
+        --         luasnip.expand_or_jump()
+        --     elseif has_words_before() then
+        --         cmp.complete()
+        --         if #cmp.get_entries() == 1 then
+        --             cmp.confirm({ select = true })
+        --         end
+        --     else
+        --         fallback()
+        --     end
+        -- end),
+        -- ['<S-Tab>'] = cmp.mapping(function(fallback)
+        --     if cmp.visible() then
+        --         if #cmp.get_entries() == 1 then
+        --             cmp.confirm({ select = true })
+        --         else
+        --             cmp.select_prev_item()
+        --         end
+        --     elseif luasnip.expand_or_jumpable() then
+        --         luasnip.expand_or_jump()
+        --     elseif has_words_before() then
+        --         cmp.complete()
+        --         if #cmp.get_entries() == 1 then
+        --             cmp.confirm({ select = true })
+        --         end
+        --     else
+        --         fallback()
+        --     end
+        -- end),
       }),
 
       -- ── Appearance ─────────────────────────────────────────

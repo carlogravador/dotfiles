@@ -53,6 +53,7 @@ return {
       -- ── Indentation ──────────────────────────────────────────
       indent = {
         enable = true,  -- Use treesitter for smart auto-indentation
+        disable = { "c", "cpp" },  -- cindent handles C/C++ brace indentation better
       },
 
       folding = {
@@ -72,6 +73,29 @@ return {
           node_decremental = "<bs>",       -- Shrink selection
         },
       },
+    })
+
+    -- Consolidated FileType autocmd for treesitter features
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "*",
+      callback = function()
+        local ft = vim.bo.filetype
+        local lang = vim.treesitter.language.get_lang(ft)
+
+        if not lang or not vim.treesitter.language.add(lang) then
+          return
+        end
+
+        vim.treesitter.start()
+
+        -- Set folding if available
+        if vim.treesitter.query.get(lang, "folds") then
+          vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        end
+
+        -- Note: indentexpr is set automatically by the treesitter indent module
+        -- (indent = { enable = true } above). No manual override needed here.
+      end,
     })
   end,
 }
