@@ -18,6 +18,7 @@ opt.shiftwidth = 4        -- Number of spaces used for each step of (auto)indent
 opt.softtabstop = 4       -- Number of spaces a <Tab> keypress inserts
 opt.expandtab = true      -- Convert tabs to spaces
 opt.autoindent = true     -- Copy indent from current line when starting a new line
+opt.shiftround = true     -- Always indent to a multiple of shiftwidth
 -- Note: smartindent and cindent are intentionally omitted.
 -- Treesitter's indentexpr (see plugins/treesitter.lua) handles language-aware
 -- indentation. For filetypes without a treesitter parser, autoindent is sufficient.
@@ -39,6 +40,10 @@ opt.colorcolumn = "100"   -- Show a vertical guide at column 100
 opt.scrolloff = 8         -- Keep 8 lines visible above/below the cursor
 opt.sidescrolloff = 8     -- Keep 8 columns visible left/right of the cursor
 
+-- Show whitespace and trailing characters
+opt.list = true
+opt.listchars = { tab = '▸ ', extends = '❯', precedes = '❮', nbsp = '±', trail = '·' }
+
 -- Splits
 opt.splitright = true     -- Open vertical splits to the right
 opt.splitbelow = true     -- Open horizontal splits below
@@ -55,9 +60,33 @@ opt.backup = false        -- Don't create backup files
 opt.completeopt = { "menu", "menuone", "noselect" }  -- Better completion menu behavior
 opt.pumheight = 10        -- Limit popup menu height to 10 items
 
+-- Command-line completion improvements
+opt.wildmode = "longest:full,full" -- Tab completion: complete longest, then full
+opt.wildignorecase = true           -- Ignore case in command-line completion
+
 -- Misc
 opt.mouse = "a"           -- Enable mouse in all modes (useful for scrolling, resizing splits)
 opt.updatetime = 250      -- Faster CursorHold events (used by gitsigns, LSP hover, etc.)
 opt.timeoutlen = 300      -- Time to wait for a mapped key sequence (ms)
 opt.showmode = false      -- Don't show "-- INSERT --" (lualine shows the mode instead)
 opt.fillchars = { eob = " " }  -- Hide ~ characters on empty lines past end of buffer
+
+-- Reduce noisy completion messages
+vim.opt.shortmess:append("c")
+
+-- Open all folds by default
+opt.foldenable = false
+
+-- Only highlight cursorline in active window
+local group = vim.api.nvim_create_augroup("CursorLineControl", { clear = true })
+local set_cursorline = function(event, value, pattern)
+  vim.api.nvim_create_autocmd(event, {
+    group = group,
+    pattern = pattern,
+    callback = function()
+      vim.opt_local.cursorline = value
+    end,
+  })
+end
+set_cursorline("WinLeave", false)
+set_cursorline("WinEnter", true)

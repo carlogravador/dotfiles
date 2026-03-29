@@ -38,11 +38,42 @@ map("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width
 
 -- ── Quality of life ─────────────────────────────────────────
 -- Clear search highlight with Escape
-map("n", "<Esc>", ":nohlsearch<CR>", { desc = "Clear search highlight" })
+map("n", "<Esc>", function()
+  -- If we find a floating window, close it.
+  local found_float = false
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_config(win).relative ~= '' then
+      vim.api.nvim_win_close(win, true)
+      found_float = true
+    end
+  end
+  if not found_float then
+    if vim.opt.hlsearch:get() then
+      vim.fn.setreg('/', '') -- Clear search highlight
+    else
+      return '<Esc>' -- Default behavior
+    end
+  end
+end, { desc = "Smart Escape: close float or clear search highlight", noremap = true, silent = true })
+
+-- Highlight word under cursor without moving
+map('n', '*', function()
+  local word = vim.fn.expand('<cword>')
+  vim.fn.setreg('/', '\\<' .. word .. '\\>')
+  vim.opt.hlsearch = true
+end, { noremap = true, silent = true, desc = 'Highlight word under cursor' })
+
+
+-- Remove trailing whitespace with <leader>cw
+map('n', '<leader>cw', function()
+  local save_cursor = vim.fn.getpos(".")
+  vim.cmd([[%s/\s\+$//e]])
+  vim.fn.setpos(".", save_cursor)
+end, { noremap = true, silent = true, desc = 'Remove trailing whitespace' })
 
 -- Stay in visual mode when indenting
--- map("v", "<", "<gv", { desc = "Indent left and reselect" })
--- map("v", ">", ">gv", { desc = "Indent right and reselect" })
+map("v", "<", "<gv", { desc = "Indent left and reselect" })
+map("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 -- Move selected lines up/down in visual mode
 map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
@@ -58,13 +89,7 @@ map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
 
 -- Paste over selection without losing the yanked text
 -- (Normally pasting over a selection puts the replaced text in the register)
-map("x", "<leader>p", '"_dP', { desc = "Paste without overwriting register" })
+-- map("x", "<leader>p", '"_dP', { desc = "Paste without overwriting register" })
 
 -- Delete without yanking (send to black hole register)
-map({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
-
--- Quick save
-map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
-
--- Quick quit
-map("n", "<leader>q", ":q<CR>", { desc = "Quit" })
+-- map({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })

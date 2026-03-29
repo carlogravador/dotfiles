@@ -11,8 +11,9 @@
 
 return {
   "nvim-treesitter/nvim-treesitter",
+  branch = "master",   -- Stable API; the main branch is an incompatible rewrite requiring Neovim 0.12+
   build = ":TSUpdate",  -- Compile/update parsers when the plugin is installed or updated
-  event = { "BufReadPre", "BufNewFile" },  -- Lazy-load when opening a file
+  lazy = false,        -- Load immediately (not on demand) to ensure parsers are available for all filetypes
   config = function()
     require("nvim-treesitter.configs").setup({
       -- Parsers to install automatically
@@ -21,10 +22,13 @@ return {
         "c",
         "cmake",
         "cpp",
+        "c_sharp",
+        "dockerfile",
         "json",
         "lua",
         "markdown",
         "markdown_inline",
+        "make",
         "vim",
         "vimdoc",
         "python",
@@ -52,13 +56,8 @@ return {
 
       -- ── Indentation ──────────────────────────────────────────
       indent = {
-        enable = true,  -- Use treesitter for smart auto-indentation
-        disable = { "c", "cpp" },  -- cindent handles C/C++ brace indentation better
-      },
-
-      folding = {
-        enable = true,  -- Enable Tree-sitter folding
-        disable = {},   -- Disable specific languages if needed
+        enable = false,  -- Use treesitter for smart auto-indentation
+        -- disable = { "c", "cpp" },  -- cindent handles C/C++ brace indentation better
       },
 
       -- ── Incremental Selection ────────────────────────────────
@@ -75,26 +74,21 @@ return {
       },
     })
 
-    -- Consolidated FileType autocmd for treesitter features
+    -- Enable treesitter-based folding per buffer when a fold query exists.
+    -- foldmethod/foldexpr must be set as window options, so an autocmd is needed.
+    -- highlight.enable = true above already starts the parser; no need to call
+    -- vim.treesitter.start() here.
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "*",
       callback = function()
         local ft = vim.bo.filetype
         local lang = vim.treesitter.language.get_lang(ft)
 
-        if not lang or not vim.treesitter.language.add(lang) then
-          return
+        if lang and vim.treesitter.query.get(lang, "folds") then
+          vim.wo.foldmethod = "expr"
+          vim.wo.foldexpr = "nvim_treesitter#foldexpr()"
+          vim.wo.foldenable = false  -- start with folds open
         end
-
-        vim.treesitter.start()
-
-        -- Set folding if available
-        if vim.treesitter.query.get(lang, "folds") then
-          vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-        end
-
-        -- Note: indentexpr is set automatically by the treesitter indent module
-        -- (indent = { enable = true } above). No manual override needed here.
       end,
     })
   end,

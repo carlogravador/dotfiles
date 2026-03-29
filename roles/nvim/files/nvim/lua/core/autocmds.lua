@@ -45,10 +45,10 @@ autocmd("VimResized", {
 })
 
 -- Remove trailing whitespace on save
-autocmd("BufWritePre", {
-  group = augroup("trim_whitespace", { clear = true }),
-  pattern = "*",
-  command = [[%s/\s\+$//e]],
-  desc = "Remove trailing whitespace on save",
-})
+-- autocmd("BufWritePre", {
+--   group = augroup("trim_whitespace", { clear = true }),
+--   pattern = "*",
+--   command = [[%s/\s\+$//e]],
+--   desc = "Remove trailing whitespace on save",
+-- })
 

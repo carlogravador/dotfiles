@@ -46,10 +46,9 @@ return {
           },
         },
         tools = {
-          opencode = {
-            -- Use opus 4.6 as default model
-            cmd = { "opencode", "--agent", "plan", "--model", "github-copilot/claude-opus-4.6" },
-          },
+          copilot = {
+            cmd = { "copilot" }
+          }
         },
         picker = "fzf-lua"
       },
@@ -69,14 +68,14 @@ return {
       {
         "<c-.>",
         -- function() require("sidekick.cli").toggle() end,
-        function() require("sidekick.cli").toggle({ name = "opencode", focus = true }) end,
+        function() require("sidekick.cli").toggle({ name = "copilot", focus = true }) end,
         desc = "Sidekick Toggle",
         mode = { "n", "t", "i", "x" },
       },
       {
         "<leader>aa",
         -- function() require("sidekick.cli").toggle() end,
-        function() require("sidekick.cli").toggle({ name = "opencode", focus = true }) end,
+        function() require("sidekick.cli").toggle({ name = "copilot", focus = true }) end,
         desc = "Sidekick Toggle CLI",
       },
       {
