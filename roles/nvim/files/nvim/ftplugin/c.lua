@@ -4,3 +4,6 @@
 -- cindent is mature and handles C brace blocks correctly,
 -- while treesitter indent has known issues with brace indentation.
 vim.bo.cindent = true
+vim.treesitter.start()
+vim.wo[0][0].foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.wo[0][0].foldmethod = 'expr'
