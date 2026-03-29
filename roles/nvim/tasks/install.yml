@@ -24,7 +24,7 @@
     - bat           # preview
     - fzf           # Fuzzy finder binary (used by fzf-lua)
     - node          # Required by some LSP servers and Mason packages, and copilot.vim
-    - tree-sitter   # Parser generator (used by nvim-treesitter)
+    - tree-sitter-cli   # Parser generator (used by nvim-treesitter)
     - cmake         # Build tool needed for some treesitter parsers
     - unzip         # Needed by Mason to install some LSP servers
   when: ansible_os_family == "Darwin"

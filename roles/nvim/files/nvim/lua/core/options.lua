@@ -33,10 +33,10 @@ opt.hlsearch = true       -- Highlight all search matches
 opt.incsearch = true      -- Show matches as you type the search pattern
 
 -- Appearance
--- opt.termguicolors = true  -- Enable 24-bit RGB colors in the terminal
+opt.termguicolors = true  -- Enable 24-bit RGB colors in the terminal
 opt.signcolumn = "yes"    -- Always show the sign column (prevents text shifting)
 opt.cursorline = true     -- Highlight the line the cursor is on
-opt.colorcolumn = "100"   -- Show a vertical guide at column 100
+opt.colorcolumn = "120"   -- Show a vertical guide at column 100
 opt.scrolloff = 8         -- Keep 8 lines visible above/below the cursor
 opt.sidescrolloff = 8     -- Keep 8 columns visible left/right of the cursor
 

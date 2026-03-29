@@ -25,16 +25,18 @@ return {
         row = 0.35,
         preview = {
           hidden = false,
-          default = "bat",
+          default = "builtin",
+          -- default = "bat",
           layout = "flex",       -- Auto-switch between horizontal/vertical preview
           flip_columns = 120,    -- Switch to vertical preview if window < 120 cols
         },
+
       },
       keymap = {
-        fzf = {
-          ["ctrl-y"] = "preview-up",
-          ["ctrl-e"] = "preview-down",
-        }
+        builtin = {
+          ["<C-y>"] = "preview-up",
+          ["<C-e>"] = "preview-down",
+        },
       },
       -- files = {
       --   -- Use fd for file finding (faster than find, respects .gitignore)
@@ -45,6 +47,17 @@ return {
       --   rg_opts = "--column --line-number --no-heading --color=always --smart-case",
       -- },
     })
+
+    -- ── Commands ─────────────────────────────────────────────
+    -- :Files [dir]  and  :Rg [dir]  mirror classic fzf.vim commands,
+    -- with tab-completion for directories so you can scope the search.
+    vim.api.nvim_create_user_command("Files", function(opts)
+      fzf.files({ cwd = opts.args ~= "" and opts.args or nil })
+    end, { nargs = "?", complete = "dir", desc = "FZF files (optional dir)" })
+
+    vim.api.nvim_create_user_command("Rg", function(opts)
+      fzf.live_grep({ cwd = opts.args ~= "" and opts.args or nil })
+    end, { nargs = "?", complete = "dir", desc = "FZF live grep (optional dir)" })
 
     -- ── Keymaps ──────────────────────────────────────────────
     local map = vim.keymap.set

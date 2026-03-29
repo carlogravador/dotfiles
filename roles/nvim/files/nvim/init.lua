@@ -10,6 +10,7 @@
 --   4. plugins       — Bootstrap lazy.nvim and load all plugin specs
 
 require("core.options")
+require("core.theme")
 require("core.keymaps")
 require("core.autocmds")
 require("plugins")
