@@ -1,10 +1,10 @@
--- plugins/lsp.lua — Language Server Protocol configuration
+-- plugin/lsp.lua — Language Server Protocol configuration
 --
 -- LSP provides IDE features: go-to-definition, find references, hover docs,
 -- rename, code actions, diagnostics, etc.
 --
 -- Architecture:
---   mason.nvim       — Installs LSP servers, linters, formatters (portable, no system deps)
+--   mason.nvim       — Installs LSP servers, linters, formatters (set up in 01-mason.lua)
 --   mason-lspconfig  — Bridges mason.nvim and nvim-lspconfig (auto-setup installed servers)
 --   nvim-lspconfig   — Configures Neovim's built-in LSP client to talk to servers
 --
@@ -14,20 +14,13 @@
 --   3. nvim-lspconfig tells Neovim how to start and communicate with each server
 --   4. When you open a file, Neovim starts the appropriate server and attaches to the buffer
 
--- ── mason.nvim — LSP/DAP/linter/formatter installer ──────────
--- Run :MasonUpdate to refresh the registry after upgrading mason.nvim.
-require("mason").setup({
-  ui = {
-    border = "rounded",
-    icons = {
-      package_installed = "✓",
-      package_pending = "➜",
-      package_uninstalled = "✗",
-    },
-  },
+vim.pack.add({
+  "https://github.com/williamboman/mason-lspconfig.nvim",
+  "https://github.com/neovim/nvim-lspconfig",
 })
 
 -- ── mason-lspconfig — Auto-install and configure LSP servers ──
+-- Requires mason.nvim (set up in 01-mason.lua).
 -- Find server names with :Mason or at:
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 require("mason-lspconfig").setup({
@@ -42,7 +35,7 @@ require("mason-lspconfig").setup({
 
 -- ── LSP Server Configurations ───────────────────────────────
 -- "capabilities" tells the server what features our client supports.
--- We enhance these with nvim-cmp's completion capabilities (set in cmp.lua).
+-- We enhance these with nvim-cmp's completion capabilities (loaded in cmp.lua).
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
 if ok then

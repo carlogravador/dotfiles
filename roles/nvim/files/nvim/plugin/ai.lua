@@ -1,4 +1,4 @@
--- plugins/ai.lua — AI assistant integration
+-- plugin/ai.lua — AI assistant integration
 --
 -- This file configures AI coding tools for Neovim:
 --   1. GitHub Copilot — inline code completions
@@ -17,6 +17,11 @@
 --   @diagnostics  — LSP diagnostics for current buffer
 --   @quickfix     — quickfix list
 --   @diff         — git diff
+
+vim.pack.add({
+  "https://github.com/github/copilot.vim",
+  "https://github.com/folke/sidekick.nvim",
+})
 
 -- ── GitHub Copilot ─────────────────────────────────────────
 -- Inline code suggestions. Type and Copilot suggests completions.

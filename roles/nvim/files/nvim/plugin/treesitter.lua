@@ -1,4 +1,4 @@
--- plugins/treesitter.lua — Syntax highlighting and code understanding
+-- plugin/treesitter.lua — Syntax highlighting and code understanding
 --
 -- nvim-treesitter (main branch, requires Neovim 0.12+) provides:
 --   - Parser installation and management via :TSInstall / :TSUpdate
@@ -9,7 +9,9 @@
 -- require("nvim-treesitter.configs").setup() no longer exists.
 --
 -- Parser updates on plugin upgrade are handled by the PackChanged autocmd
--- in plugins/init.lua (replaces the build = ":TSUpdate" hook from lazy.nvim).
+-- in init.lua (runs before any plugin/ file is sourced).
+
+vim.pack.add({ "https://github.com/nvim-treesitter/nvim-treesitter" })
 
 -- Minimal setup; only needed if overriding the default install_dir
 -- (defaults to stdpath('data') .. '/site').

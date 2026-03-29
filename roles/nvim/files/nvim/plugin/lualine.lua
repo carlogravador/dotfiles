@@ -1,4 +1,4 @@
--- plugins/lualine.lua — Statusline
+-- plugin/lualine.lua — Statusline
 --
 -- lualine.nvim replaces Neovim's default statusline with a configurable,
 -- informative bar at the bottom of the screen.
@@ -13,6 +13,8 @@
 --   X = diagnostics, filetype
 --   Y = encoding, file format
 --   Z = cursor position
+
+vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
 
 require("lualine").setup({
   options = {

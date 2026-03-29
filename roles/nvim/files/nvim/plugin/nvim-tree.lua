@@ -1,4 +1,4 @@
--- plugins/nvim-tree.lua — File explorer
+-- plugin/nvim-tree.lua — File explorer
 --
 -- nvim-tree provides a side-panel file tree, similar to VSCode's explorer.
 -- It supports file operations (create, rename, delete, copy, move),
@@ -15,6 +15,8 @@
 --     p — Paste
 --     Enter — Open file
 --     q — Close tree
+
+vim.pack.add({ "https://github.com/nvim-tree/nvim-tree.lua" })
 
 -- Recommended: disable netrw (Neovim's built-in file explorer)
 -- to avoid conflicts with nvim-tree.

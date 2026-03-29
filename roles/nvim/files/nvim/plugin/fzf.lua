@@ -1,4 +1,4 @@
--- plugins/fzf.lua — Fuzzy finder using fzf
+-- plugin/fzf.lua — Fuzzy finder using fzf
 --
 -- fzf-lua is a Neovim fuzzy finder that uses the fzf binary.
 -- It provides fast searching for files, grep results, buffers, help tags, etc.
@@ -7,6 +7,11 @@
 --   - Uses the native fzf binary (very fast, especially on large codebases)
 --   - Familiar fzf keybindings if you already use fzf in the terminal
 --   - Lower overhead than telescope for most search operations
+
+vim.pack.add({
+  "https://github.com/ibhagwan/fzf-lua",
+  "https://github.com/nvim-tree/nvim-web-devicons",
+})
 
 local fzf = require("fzf-lua")
 

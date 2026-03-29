@@ -44,15 +44,17 @@ yamllint .
 
 ### Neovim plugin management
 
-Plugins are managed by lazy.nvim inside Neovim, not from the shell:
+Plugins are managed by `vim.pack` (Neovim 0.12+ built-in plugin manager):
 
 ```
-:Lazy update     — Update all plugins
-:Lazy sync       — Install missing + update + clean removed
-:Mason           — Manage LSP servers, DAP adapters, linters, formatters
+:lua vim.pack.update()              — Update all plugins
+:lua vim.pack.update({'name'})      — Update a specific plugin
+:lua vim.pack.del({'name'})         — Delete a plugin from disk
+:checkhealth vim.pack               — Diagnose plugin issues
+:Mason                              — Manage LSP servers, DAP adapters, linters, formatters
 ```
 
-The `lazy-lock.json` lockfile is committed for reproducible installs.
+The `nvim-pack-lock.json` lockfile is committed for reproducible installs.
 
 ## Code Style — Lua (Neovim config)
 
@@ -65,10 +67,12 @@ The `lazy-lock.json` lockfile is committed for reproducible installs.
 
 ### File structure
 
-- `core/*.lua` files execute side effects directly (set options, create keymaps). No return value.
-- `plugins/*.lua` files (except `init.lua`) **return a plugin spec table**: `return { ... }`
-- `plugins/init.lua` bootstraps lazy.nvim and imports other plugin files via `{ import = "plugins.X" }`
-- One file per plugin. One file per concern in `core/`.
+- `init.lua` loads core modules via `require()` and defines `PackChanged` hooks.
+- `lua/core/*.lua` files execute side effects directly (set options, create keymaps). No return value.
+- `plugin/*.lua` files are **auto-sourced by Neovim** in alphabetical order (no `require()` needed).
+  Each file calls `vim.pack.add()` for its own plugins, then configures them.
+- Use numeric prefixes (`00-`, `01-`) to force load order where needed (e.g., colorscheme, mason).
+- One file per plugin concern. One file per concern in `core/`.
 
 ### Requires and aliases
 
@@ -90,7 +94,7 @@ local augroup = vim.api.nvim_create_augroup
 
 - All keymaps **must** include a `desc` field
 - Leader key is `Space`
-- Plugin keymaps go in the plugin's own config function, not in `core/keymaps.lua`
+- Plugin keymaps go in the plugin's own `plugin/*.lua` file, not in `core/keymaps.lua`
 - LSP keymaps are buffer-local, set in the `LspAttach` autocmd
 - Prefix `desc` with the plugin/system name for scoped keymaps: `"LSP: Go to definition"`, `"DAP: Toggle breakpoint"`
 
@@ -107,14 +111,23 @@ local augroup = vim.api.nvim_create_augroup
 - **Inline comments**: explain the *why*, not the *what*
 - This is a teaching-oriented repo — comments should explain Neovim/Ansible concepts
 
-### Lazy-loading
+### Lazy loading
 
-Use appropriate events to defer plugin loading:
+`vim.pack` supports lazy loading by deferring `vim.pack.add()` calls. Use
+sparingly — prefer simplicity over extreme lazy loading:
 
 ```lua
-event = "InsertEnter"                    -- Completion, snippets
-event = { "BufReadPre", "BufNewFile" }   -- Treesitter, syntax-related
-event = "VeryLazy"                       -- UI plugins (statusline)
+-- Load after startup (vim.schedule)
+vim.schedule(function()
+  vim.pack.add({ "https://github.com/user/plugin" })
+  require("plugin").setup()
+end)
+
+-- Load on specific event (once = true)
+vim.api.nvim_create_autocmd("InsertEnter", { once = true, callback = function()
+  vim.pack.add({ "https://github.com/user/plugin" })
+  require("plugin").setup()
+end })
 ```
 
 ## Code Style — YAML (Ansible)
@@ -176,6 +189,6 @@ roles:
 ## Repository Conventions
 
 - No external linter/formatter configs exist yet. Follow the patterns in existing files.
-- `lazy-lock.json` is version-controlled for reproducibility.
+- `nvim-pack-lock.json` is version-controlled for reproducibility.
 - No `.gitignore` exists — add one if introducing build artifacts or secrets.
 - Commit messages: `<type>: <concise description>` with an optional body explaining the change.

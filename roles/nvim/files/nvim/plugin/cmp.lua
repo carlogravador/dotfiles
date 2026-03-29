@@ -1,4 +1,4 @@
--- plugins/cmp.lua — Autocompletion
+-- plugin/cmp.lua — Autocompletion
 --
 -- nvim-cmp is a completion engine for Neovim. It aggregates completion
 -- candidates from multiple "sources" and displays them in a popup menu.
@@ -9,6 +9,18 @@
 --   cmp-path      — File system paths
 --   LuaSnip       — Snippet engine (expands snippet completions)
 --   cmp_luasnip   — Bridge between nvim-cmp and LuaSnip
+
+vim.pack.add({
+  "https://github.com/hrsh7th/nvim-cmp",
+  "https://github.com/hrsh7th/cmp-nvim-lsp",
+  "https://github.com/hrsh7th/cmp-buffer",
+  "https://github.com/hrsh7th/cmp-path",
+  "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help",
+  "https://github.com/L3MON4D3/LuaSnip",
+  "https://github.com/saadparwaiz1/cmp_luasnip",
+  "https://github.com/rafamadriz/friendly-snippets",
+  "https://github.com/onsails/lspkind.nvim",
+})
 
 local cmp = require("cmp")
 local luasnip = require("luasnip")

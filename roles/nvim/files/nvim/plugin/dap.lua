@@ -1,4 +1,4 @@
--- plugins/dap.lua — Debug Adapter Protocol (DAP) configuration
+-- plugin/dap.lua — Debug Adapter Protocol (DAP) configuration
 --
 -- DAP lets you debug programs directly inside Neovim with breakpoints,
 -- stepping, variable inspection, and more — like a traditional IDE debugger.
@@ -24,6 +24,13 @@
 --   <leader>B  — Set conditional breakpoint (prompts for condition)
 --   <leader>dr — Toggle DAP REPL (interactive debug console)
 --   <leader>du — Toggle DAP UI panels
+
+vim.pack.add({
+  "https://github.com/mfussenegger/nvim-dap",
+  "https://github.com/rcarriga/nvim-dap-ui",
+  "https://github.com/nvim-neotest/nvim-nio",
+  "https://github.com/jay-babu/mason-nvim-dap.nvim",
+})
 
 local dap = require("dap")
 local dapui = require("dapui")
@@ -66,6 +73,7 @@ dap.listeners.before.event_exited["dapui_config"] = function()
 end
 
 -- ── mason-nvim-dap — Auto-install debug adapters via Mason ───
+-- Requires mason.nvim to be set up first (done in 01-mason.lua).
 require("mason-nvim-dap").setup({
   -- Debug adapters to auto-install
   ensure_installed = {
