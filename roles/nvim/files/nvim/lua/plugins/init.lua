@@ -1,56 +1,85 @@
--- plugins/init.lua — Plugin manager bootstrap and plugin loading
+-- plugins/init.lua — Plugin management via vim.pack (Neovim 0.12+)
 --
--- This file does two things:
---   1. Bootstraps lazy.nvim (auto-installs it if not present)
---   2. Loads all plugin specs from the plugins/ directory
+-- vim.pack is Neovim's built-in plugin manager (no external dependencies).
+-- It clones Git repositories, manages updates, and loads plugins using
+-- Neovim's native package system (:h packages, :h vim.pack).
 --
--- lazy.nvim Concepts:
---   - lazy.nvim is a modern plugin manager for Neovim that supports:
---     - Lazy-loading: plugins load only when needed (faster startup)
---     - Lockfile: lazy-lock.json pins exact plugin versions for reproducibility
---     - Automatic installation: plugins install on first launch
---   - Each plugin spec is a Lua table: { "owner/repo", config = function() ... end }
---   - Specs can also be returned from separate files via { import = "plugins.foo" }
+-- Key concepts:
+--   - vim.pack.add()   — Install (if missing) and load a list of plugins
+--   - Lockfile         — nvim-pack-lock.json in the config dir pins versions
+--   - No lazy-loading  — Plugins load immediately on vim.pack.add()
+--   - PackChanged      — Autocmd fired after any install, update, or delete
+--
+-- Managing plugins:
+--   :lua vim.pack.update()           — Update all plugins
+--   :lua vim.pack.update({'name'})   — Update a specific plugin
 
--- ── Bootstrap lazy.nvim ──────────────────────────────────────
--- Check if lazy.nvim is already installed. If not, clone it from GitHub.
--- This runs once on a fresh machine; subsequent launches skip this.
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",                          -- Partial clone (faster)
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",                             -- Use the latest stable release
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)                      -- Add lazy.nvim to the runtime path
+-- ── Install and load all plugins ─────────────────────────────
+vim.pack.add({
+  -- Syntax / Treesitter
+  "https://github.com/nvim-treesitter/nvim-treesitter",
 
--- ── Load plugins ─────────────────────────────────────────────
--- Each { import = "plugins.X" } loads lua/plugins/X.lua and uses
--- the table it returns as a plugin spec.
-require("lazy").setup({
-  { import = "plugins.treesitter" },
-  { import = "plugins.lsp" },
-  { import = "plugins.cmp" },
-  { import = "plugins.fzf" },
-  { import = "plugins.nvim-tree" },
-  { import = "plugins.lualine" },
-  { import = "plugins.dap" },
-  { import = "plugins.ai" },
-  { import = "plugins.mini" },
-}, {
-  -- lazy.nvim configuration options
-  install = {
-    -- Try to use the default colorscheme during plugin installation
-    colorscheme = { "default" },
-  },
-  checker = {
-    enabled = false,  -- Don't auto-check for plugin updates (run :Lazy update manually)
-  },
-  change_detection = {
-    notify = false,   -- Don't notify when plugin config files change
-  },
+  -- LSP infrastructure
+  "https://github.com/williamboman/mason.nvim",
+  "https://github.com/williamboman/mason-lspconfig.nvim",
+  "https://github.com/neovim/nvim-lspconfig",
+
+  -- Completion engine + sources
+  "https://github.com/hrsh7th/nvim-cmp",
+  "https://github.com/hrsh7th/cmp-nvim-lsp",
+  "https://github.com/hrsh7th/cmp-buffer",
+  "https://github.com/hrsh7th/cmp-path",
+  "https://github.com/hrsh7th/cmp-nvim-lsp-signature-help",
+  "https://github.com/L3MON4D3/LuaSnip",
+  "https://github.com/saadparwaiz1/cmp_luasnip",
+  "https://github.com/rafamadriz/friendly-snippets",
+  "https://github.com/onsails/lspkind.nvim",
+
+  -- Fuzzy finder
+  "https://github.com/ibhagwan/fzf-lua",
+  "https://github.com/nvim-tree/nvim-web-devicons",
+
+  -- File explorer
+  "https://github.com/nvim-tree/nvim-tree.lua",
+
+  -- Statusline
+  "https://github.com/nvim-lualine/lualine.nvim",
+
+  -- Debug Adapter Protocol
+  "https://github.com/mfussenegger/nvim-dap",
+  "https://github.com/rcarriga/nvim-dap-ui",
+  "https://github.com/nvim-neotest/nvim-nio",
+  "https://github.com/jay-babu/mason-nvim-dap.nvim",
+
+  -- AI
+  "https://github.com/github/copilot.vim",
+  "https://github.com/folke/sidekick.nvim",
+
+  -- Mini modules (auto-pairs, surround, etc.)
+  -- version = vim.version.range("*") tracks the latest semver-tagged release
+  { src = "https://github.com/nvim-mini/mini.nvim", version = vim.version.range("*") },
 })
+
+-- ── Post-update hook ──────────────────────────────────────────
+-- After any plugin install/update/delete, update Treesitter parsers
+-- (equivalent to the :TSUpdate build hook in lazy.nvim).
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function()
+    local ok, _ = pcall(require, "nvim-treesitter")
+    if ok then vim.cmd("TSUpdate") end
+  end,
+})
+
+-- ── Load plugin configurations ────────────────────────────────
+-- Each file sets up its plugin(s) and registers keymaps. Order matters
+-- where one plugin depends on another being configured first (e.g., LSP
+-- capabilities must be set before mason-lspconfig attaches servers).
+require("plugins.treesitter")
+require("plugins.lsp")
+require("plugins.cmp")
+require("plugins.fzf")
+require("plugins.nvim-tree")
+require("plugins.lualine")
+require("plugins.dap")
+require("plugins.ai")
+require("plugins.mini")

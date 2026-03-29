@@ -10,128 +10,112 @@
 --   LuaSnip       — Snippet engine (expands snippet completions)
 --   cmp_luasnip   — Bridge between nvim-cmp and LuaSnip
 
-return {
-  "hrsh7th/nvim-cmp",
-  event = "InsertEnter",  -- Lazy-load: only load when entering insert mode
-  dependencies = {
-    "hrsh7th/cmp-nvim-lsp",     -- LSP completion source
-    "hrsh7th/cmp-buffer",       -- Buffer words source
-    "hrsh7th/cmp-path",         -- File path source
-    "hrsh7th/cmp-nvim-lsp-signature-help",
-    "L3MON4D3/LuaSnip",        -- Snippet engine
-    "saadparwaiz1/cmp_luasnip", -- Snippet completion source
-    "rafamadriz/friendly-snippets", -- Collection of common snippets
-    "onsails/lspkind.nvim", -- vs-code like pictograms
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+
+-- Load snippet collections from friendly-snippets
+require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
+  -- ── Snippet expansion ──────────────────────────────────
+  -- When a completion item is a snippet, this function expands it
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
   },
-  config = function()
-    local cmp = require("cmp")
-    local luasnip = require("luasnip")
 
-    -- Load snippet collections from friendly-snippets
-    require("luasnip.loaders.from_vscode").lazy_load()
+  -- ── Completion sources ─────────────────────────────────
+  -- Order matters: higher in the list = higher priority in the menu.
+  -- "group_index" groups sources; group 1 shows before group 2.
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },   -- LSP completions (highest priority)
+    { name = "luasnip" },    -- Snippets
+    { name = "path" },       -- File paths
+  }, {
+    { name = "buffer" },     -- Buffer words (fallback group)
+  }),
 
-    cmp.setup({
-      -- ── Snippet expansion ──────────────────────────────────
-      -- When a completion item is a snippet, this function expands it
-      snippet = {
-        expand = function(args)
-          luasnip.lsp_expand(args.body)
-        end,
-      },
+  -- ── Key mappings ───────────────────────────────────────
+  mapping = cmp.mapping.preset.insert({
+    -- Navigate the completion menu
+    ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
+    ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
+    ["<C-n>"] = cmp.mapping.select_next_item(),          -- Next item
+    ["<C-p>"] = cmp.mapping.select_prev_item(),          -- Previous item
 
-      -- ── Completion sources ─────────────────────────────────
-      -- Order matters: higher in the list = higher priority in the menu.
-      -- "group_index" groups sources; group 1 shows before group 2.
-      sources = cmp.config.sources({
-        { name = "nvim_lsp" },   -- LSP completions (highest priority)
-        { name = "luasnip" },    -- Snippets
-        { name = "path" },       -- File paths
-      }, {
-        { name = "buffer" },     -- Buffer words (fallback group)
-      }),
+    -- Scroll documentation window
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),             -- Scroll up
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),              -- Scroll down
+    ["<C-e>"] = cmp.mapping.scroll_docs(1),
+    ["<C-y>"] = cmp.mapping.scroll_docs(-1),
 
-      -- ── Key mappings ───────────────────────────────────────
-      mapping = cmp.mapping.preset.insert({
-        -- Navigate the completion menu
-        ["<C-k>"] = cmp.mapping.select_prev_item(), -- previous suggestion
-        ["<C-j>"] = cmp.mapping.select_next_item(), -- next suggestion
-        ["<C-n>"] = cmp.mapping.select_next_item(),          -- Next item
-        ["<C-p>"] = cmp.mapping.select_prev_item(),          -- Previous item
+    -- Trigger completion manually (usually auto-triggers)
+    ["<C-Space>"] = cmp.mapping.complete(),
 
-        -- Scroll documentation window
-        ["<C-b>"] = cmp.mapping.scroll_docs(-4),             -- Scroll up
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),              -- Scroll down
-        ["<C-e>"] = cmp.mapping.scroll_docs(1),
-        ["<C-y>"] = cmp.mapping.scroll_docs(-1),
+    -- Confirm selection
+    -- "select = false" means you must explicitly pick an item;
+    -- pressing Enter without selecting does a normal newline.
+    -- ["<CR>"] = cmp.mapping.confirm({ select = false }),
+    ["<CR>"] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    }),
 
-        -- Trigger completion manually (usually auto-triggers)
-        ["<C-Space>"] = cmp.mapping.complete(),
+    -- ['<Tab>'] = cmp.mapping(function(fallback)
+    --     if cmp.visible() then
+    --         if #cmp.get_entries() == 1 then
+    --             cmp.confirm({ select = true })
+    --         else
+    --             cmp.select_next_item()
+    --         end
+    --     elseif luasnip.expand_or_jumpable() then
+    --         luasnip.expand_or_jump()
+    --     elseif has_words_before() then
+    --         cmp.complete()
+    --         if #cmp.get_entries() == 1 then
+    --             cmp.confirm({ select = true })
+    --         end
+    --     else
+    --         fallback()
+    --     end
+    -- end),
+    -- ['<S-Tab>'] = cmp.mapping(function(fallback)
+    --     if cmp.visible() then
+    --         if #cmp.get_entries() == 1 then
+    --             cmp.confirm({ select = true })
+    --         else
+    --             cmp.select_prev_item()
+    --         end
+    --     elseif luasnip.expand_or_jumpable() then
+    --         luasnip.expand_or_jump()
+    --     elseif has_words_before() then
+    --         cmp.complete()
+    --         if #cmp.get_entries() == 1 then
+    --             cmp.confirm({ select = true })
+    --         end
+    --     else
+    --         fallback()
+    --     end
+    -- end),
+  }),
 
-        -- Confirm selection
-        -- "select = false" means you must explicitly pick an item;
-        -- pressing Enter without selecting does a normal newline.
-        -- ["<CR>"] = cmp.mapping.confirm({ select = false }),
-        ["<CR>"] = cmp.mapping.confirm({
-          behavior = cmp.ConfirmBehavior.Replace,
-          select = true,
-        }),
+  -- ── Appearance ─────────────────────────────────────────
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
 
-        -- ['<Tab>'] = cmp.mapping(function(fallback)
-        --     if cmp.visible() then
-        --         if #cmp.get_entries() == 1 then
-        --             cmp.confirm({ select = true })
-        --         else
-        --             cmp.select_next_item()
-        --         end
-        --     elseif luasnip.expand_or_jumpable() then
-        --         luasnip.expand_or_jump()
-        --     elseif has_words_before() then
-        --         cmp.complete()
-        --         if #cmp.get_entries() == 1 then
-        --             cmp.confirm({ select = true })
-        --         end
-        --     else
-        --         fallback()
-        --     end
-        -- end),
-        -- ['<S-Tab>'] = cmp.mapping(function(fallback)
-        --     if cmp.visible() then
-        --         if #cmp.get_entries() == 1 then
-        --             cmp.confirm({ select = true })
-        --         else
-        --             cmp.select_prev_item()
-        --         end
-        --     elseif luasnip.expand_or_jumpable() then
-        --         luasnip.expand_or_jump()
-        --     elseif has_words_before() then
-        --         cmp.complete()
-        --         if #cmp.get_entries() == 1 then
-        --             cmp.confirm({ select = true })
-        --         end
-        --     else
-        --         fallback()
-        --     end
-        -- end),
-      }),
-
-      -- ── Appearance ─────────────────────────────────────────
-      window = {
-        completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
-      },
-
-      -- Show source name in the completion menu (e.g., [LSP], [Buffer])
-      formatting = {
-        format = function(entry, vim_item)
-          vim_item.menu = ({
-            nvim_lsp = "[LSP]",
-            luasnip  = "[Snip]",
-            buffer   = "[Buf]",
-            path     = "[Path]",
-          })[entry.source.name]
-          return vim_item
-        end,
-      },
-    })
-  end,
-}
+  -- Show source name in the completion menu (e.g., [LSP], [Buffer])
+  formatting = {
+    format = function(entry, vim_item)
+      vim_item.menu = ({
+        nvim_lsp = "[LSP]",
+        luasnip  = "[Snip]",
+        buffer   = "[Buf]",
+        path     = "[Path]",
+      })[entry.source.name]
+      return vim_item
+    end,
+  },
+})

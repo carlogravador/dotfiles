@@ -25,169 +25,145 @@
 --   <leader>dr — Toggle DAP REPL (interactive debug console)
 --   <leader>du — Toggle DAP UI panels
 
-return {
-  -- nvim-dap — Core DAP client
-  {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      -- DAP UI — Provides variable watch, call stack, breakpoints, REPL panels
-      {
-        "rcarriga/nvim-dap-ui",
-        dependencies = { "nvim-neotest/nvim-nio" },  -- Required async library
-        config = function()
-          local dapui = require("dapui")
-          dapui.setup({
-            -- Layout: panels on the left (scopes, breakpoints, stacks)
-            -- and a panel on the bottom (repl, console)
-            layouts = {
-              {
-                elements = {
-                  { id = "scopes", size = 0.40 },      -- Variables in current scope
-                  { id = "breakpoints", size = 0.20 },  -- List of all breakpoints
-                  { id = "stacks", size = 0.20 },       -- Call stack
-                  { id = "watches", size = 0.20 },      -- Watch expressions
-                },
-                size = 40,         -- Width in columns
-                position = "left",
-              },
-              {
-                elements = {
-                  { id = "repl", size = 0.50 },     -- Debug REPL
-                  { id = "console", size = 0.50 },  -- Program output
-                },
-                size = 10,         -- Height in lines
-                position = "bottom",
-              },
-            },
-          })
+local dap = require("dap")
+local dapui = require("dapui")
 
-          -- Automatically open/close the DAP UI when a debug session starts/ends
-          local dap = require("dap")
-          dap.listeners.after.event_initialized["dapui_config"] = function()
-            dapui.open()
-          end
-          dap.listeners.before.event_terminated["dapui_config"] = function()
-            dapui.close()
-          end
-          dap.listeners.before.event_exited["dapui_config"] = function()
-            dapui.close()
-          end
-        end,
+-- ── nvim-dap-ui ──────────────────────────────────────────────
+-- Layout: panels on the left (scopes, breakpoints, stacks)
+-- and a panel on the bottom (repl, console)
+dapui.setup({
+  layouts = {
+    {
+      elements = {
+        { id = "scopes", size = 0.40 },      -- Variables in current scope
+        { id = "breakpoints", size = 0.20 },  -- List of all breakpoints
+        { id = "stacks", size = 0.20 },       -- Call stack
+        { id = "watches", size = 0.20 },      -- Watch expressions
       },
-
-      -- mason-nvim-dap — Auto-install debug adapters via Mason
-      {
-        "jay-babu/mason-nvim-dap.nvim",
-        dependencies = { "williamboman/mason.nvim" },
-        config = function()
-          require("mason-nvim-dap").setup({
-            -- Debug adapters to auto-install
-            ensure_installed = {
-              "codelldb",  -- LLDB-based adapter for Rust, C, C++
-            },
-            -- Automatically configure installed adapters
-            automatic_installation = true,
-            -- Use default handler (auto-configures adapters with sensible defaults)
-            handlers = {},
-          })
-        end,
-      },
+      size = 40,         -- Width in columns
+      position = "left",
     },
+    {
+      elements = {
+        { id = "repl", size = 0.50 },     -- Debug REPL
+        { id = "console", size = 0.50 },  -- Program output
+      },
+      size = 10,         -- Height in lines
+      position = "bottom",
+    },
+  },
+})
 
-    config = function()
-      local dap = require("dap")
-      local dapui = require("dapui")
+-- Automatically open/close the DAP UI when a debug session starts/ends
+dap.listeners.after.event_initialized["dapui_config"] = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+  dapui.close()
+end
 
-      -- ── Breakpoint signs ─────────────────────────────────────
-      -- Customize how breakpoints look in the sign column
-      vim.fn.sign_define("DapBreakpoint", {
-        text = "●",
-        texthl = "DapBreakpoint",
-        linehl = "",
-        numhl = "",
-      })
-      vim.fn.sign_define("DapBreakpointCondition", {
-        text = "◆",
-        texthl = "DapBreakpointCondition",
-        linehl = "",
-        numhl = "",
-      })
-      vim.fn.sign_define("DapStopped", {
-        text = "▶",
-        texthl = "DapStopped",
-        linehl = "DapStoppedLine",
-        numhl = "",
-      })
+-- ── mason-nvim-dap — Auto-install debug adapters via Mason ───
+require("mason-nvim-dap").setup({
+  -- Debug adapters to auto-install
+  ensure_installed = {
+    "codelldb",  -- LLDB-based adapter for Rust, C, C++
+  },
+  -- Automatically configure installed adapters
+  automatic_installation = true,
+  -- Use default handler (auto-configures adapters with sensible defaults)
+  handlers = {},
+})
 
-      -- ── codelldb adapter configuration ───────────────────────
-      -- mason-nvim-dap's handlers auto-configure codelldb, but if you
-      -- need to override, you can do it here:
-      --
-      -- The adapter is the program that nvim-dap talks to.
-      -- codelldb speaks the DAP protocol and controls LLDB under the hood.
-      --
-      -- If mason-nvim-dap doesn't configure it automatically, uncomment:
-      -- local mason_path = vim.fn.stdpath("data") .. "/mason"
-      -- local codelldb_path = mason_path .. "/bin/codelldb"
-      --
-      -- dap.adapters.codelldb = {
-      --   type = "server",
-      --   port = "${port}",
-      --   executable = {
-      --     command = codelldb_path,
-      --     args = { "--port", "${port}" },
-      --   },
-      -- }
+-- ── Breakpoint signs ─────────────────────────────────────────
+-- Customize how breakpoints look in the sign column
+vim.fn.sign_define("DapBreakpoint", {
+  text = "●",
+  texthl = "DapBreakpoint",
+  linehl = "",
+  numhl = "",
+})
+vim.fn.sign_define("DapBreakpointCondition", {
+  text = "◆",
+  texthl = "DapBreakpointCondition",
+  linehl = "",
+  numhl = "",
+})
+vim.fn.sign_define("DapStopped", {
+  text = "▶",
+  texthl = "DapStopped",
+  linehl = "DapStoppedLine",
+  numhl = "",
+})
 
-      -- ── Debug configurations per language ────────────────────
-      -- These define HOW to start debugging for each language.
-      -- "request = launch" means start a new process.
-      -- "request = attach" means connect to an already-running process.
+-- ── codelldb adapter configuration ───────────────────────────
+-- mason-nvim-dap's handlers auto-configure codelldb, but if you
+-- need to override, you can do it here:
+--
+-- The adapter is the program that nvim-dap talks to.
+-- codelldb speaks the DAP protocol and controls LLDB under the hood.
+--
+-- If mason-nvim-dap doesn't configure it automatically, uncomment:
+-- local mason_path = vim.fn.stdpath("data") .. "/mason"
+-- local codelldb_path = mason_path .. "/bin/codelldb"
+--
+-- dap.adapters.codelldb = {
+--   type = "server",
+--   port = "${port}",
+--   executable = {
+--     command = codelldb_path,
+--     args = { "--port", "${port}" },
+--   },
+-- }
 
-      -- C
-      dap.configurations.c = {
-        {
-          name = "Launch (C)",
-          type = "codelldb",
-          request = "launch",
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopOnEntry = false,
-        },
-      }
+-- ── Debug configurations per language ────────────────────────
+-- These define HOW to start debugging for each language.
+-- "request = launch" means start a new process.
+-- "request = attach" means connect to an already-running process.
 
-      -- C++ (same adapter, same configuration pattern)
-      dap.configurations.cpp = dap.configurations.c
-
-      -- ── Keymaps ──────────────────────────────────────────────
-      local map = vim.keymap.set
-
-      -- Session control
-      map("n", "<F5>", dap.continue, { desc = "DAP: Start/Continue" })
-      map("n", "<F10>", dap.step_over, { desc = "DAP: Step Over" })
-      map("n", "<F11>", dap.step_into, { desc = "DAP: Step Into" })
-      map("n", "<F12>", dap.step_out, { desc = "DAP: Step Out" })
-      map("n", "<leader>dt", dap.terminate, { desc = "DAP: Terminate session" })
-
-      -- Breakpoints
-      map("n", "<leader>b", dap.toggle_breakpoint, { desc = "DAP: Toggle breakpoint" })
-      map("n", "<leader>B", function()
-        dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
-      end, { desc = "DAP: Set conditional breakpoint" })
-      map("n", "<leader>lp", function()
-        dap.set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
-      end, { desc = "DAP: Set log point" })
-
-      -- UI
-      map("n", "<leader>du", dapui.toggle, { desc = "DAP: Toggle UI" })
-      map("n", "<leader>dr", dap.repl.toggle, { desc = "DAP: Toggle REPL" })
-
-      -- Hover (inspect variable under cursor during debug)
-      map({ "n", "v" }, "<leader>dh", function()
-        require("dap.ui.widgets").hover()
-      end, { desc = "DAP: Hover variable" })
+-- C
+dap.configurations.c = {
+  {
+    name = "Launch (C)",
+    type = "codelldb",
+    request = "launch",
+    program = function()
+      return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
     end,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = false,
   },
 }
+
+-- C++ (same adapter, same configuration pattern)
+dap.configurations.cpp = dap.configurations.c
+
+-- ── Keymaps ──────────────────────────────────────────────────
+local map = vim.keymap.set
+
+-- Session control
+map("n", "<F5>", dap.continue, { desc = "DAP: Start/Continue" })
+map("n", "<F10>", dap.step_over, { desc = "DAP: Step Over" })
+map("n", "<F11>", dap.step_into, { desc = "DAP: Step Into" })
+map("n", "<F12>", dap.step_out, { desc = "DAP: Step Out" })
+map("n", "<leader>dt", dap.terminate, { desc = "DAP: Terminate session" })
+
+-- Breakpoints
+map("n", "<leader>b", dap.toggle_breakpoint, { desc = "DAP: Toggle breakpoint" })
+map("n", "<leader>B", function()
+  dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
+end, { desc = "DAP: Set conditional breakpoint" })
+map("n", "<leader>lp", function()
+  dap.set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+end, { desc = "DAP: Set log point" })
+
+-- UI
+map("n", "<leader>du", dapui.toggle, { desc = "DAP: Toggle UI" })
+map("n", "<leader>dr", dap.repl.toggle, { desc = "DAP: Toggle REPL" })
+
+-- Hover (inspect variable under cursor during debug)
+map({ "n", "v" }, "<leader>dh", function()
+  require("dap.ui.widgets").hover()
+end, { desc = "DAP: Hover variable" })
