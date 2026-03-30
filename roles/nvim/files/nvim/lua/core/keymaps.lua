@@ -20,10 +20,10 @@ local map = vim.keymap.set
 
 -- ── Navigation ───────────────────────────────────────────────
 -- Move between windows with Ctrl+hjkl (instead of Ctrl+w then hjkl)
-map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Move to lower window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
+-- map("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
+-- map("n", "<C-j>", "<C-w>j", { desc = "Move to lower window" })
+-- map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
+-- map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
 -- Resize windows with Ctrl+Arrow keys
 map("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height" })

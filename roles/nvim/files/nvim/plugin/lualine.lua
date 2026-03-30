@@ -16,6 +16,8 @@
 
 vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
 
+local sidekick_ok, sidekick_status = pcall(require, "sidekick.status")
+
 require("lualine").setup({
   options = {
     -- Use a built-in theme (no external colorscheme dependency)
@@ -33,42 +35,67 @@ require("lualine").setup({
   sections = {
     lualine_a = { "mode" },
     lualine_b = {
-      -- "branch",
-      -- "diff",
+      "branch",
+      "diff",
     },
     lualine_c = {
       { "filename", path = 1 },  -- path=1 shows relative path
-      { "diagnostics" },
-    },
-    -- lualine_x = {
-    --   "diagnostics",
-    --   "filetype",
-    -- },
-    lualine_x = {
-      -- Show OpenCode agent status (idle, busy, etc.) when connected.
-      -- The statusline function is provided by opencode.nvim and returns
-      -- an empty string when OpenCode is not running.
+      -- Sidekick: Copilot status
       {
         function()
-          local ok, opencode = pcall(require, "opencode")
-          if ok and opencode.statusline then
-            return opencode.statusline()
+          if not sidekick_ok then
+            return ""
           end
-          return ""
+          return " "
+        end,
+        color = function()
+          if not sidekick_ok then
+            return nil
+          end
+          local status = sidekick_status.get()
+          if status then
+            if status.kind == "Error" then
+              return "DiagnosticError"
+            elseif status.busy then
+              return "DiagnosticWarn"
+            else
+              return "Special"
+            end
+          end
         end,
         cond = function()
-          local ok, opencode = pcall(require, "opencode")
-          if ok and opencode.statusline then
-            return opencode.statusline() ~= ""
+          if not sidekick_ok then
+            return false
           end
-          return false
+          return sidekick_status.get() ~= nil
         end,
       },
+      -- { "diagnostics" },
+    },
+    lualine_x = {
+      "diagnostics",
+      -- CLI session status (from sidekick)
+      {
+        function()
+          if not sidekick_ok then
+            return ""
+          end
+          local status = sidekick_status.cli()
+          return " " .. (#status > 1 and #status or "")
+        end,
+        cond = function()
+          return sidekick_ok and #sidekick_status.cli() > 0
+        end,
+        color = function()
+          return "Special"
+        end,
+      },
+      "filetype",
     },
     lualine_y = {
       { "encoding" },
       { "fileformat" },
-      { "filetype" },
+      -- { "filetype" },
     },
     -- lualine_y = { "progress" },  -- Percentage through the file
     lualine_z = {
@@ -88,6 +115,6 @@ require("lualine").setup({
   extensions = {
     "nvim-tree",
     "fzf",
-    "quickfix",
+    "quickfix"
   },
 })
