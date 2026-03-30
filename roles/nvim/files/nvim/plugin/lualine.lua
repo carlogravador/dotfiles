@@ -16,6 +16,17 @@
 
 vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
 
+-- Returns the fg/bg of lualine_y_normal so inactive sections can mirror it.
+-- Called as a function so it resolves after lualine has defined its highlights.
+local function inactive_color()
+  return {
+    -- fg = hl.fg and string.format("#%06x", hl.fg) or nil,
+    -- bg = hl.bg and string.format("#%06x", hl.bg) or nil,
+    fg = "#82aaff",
+    bg = "#3b4261",
+  }
+end
+
 local sidekick_ok, sidekick_status = pcall(require, "sidekick.status")
 
 require("lualine").setup({
@@ -30,7 +41,7 @@ require("lualine").setup({
     --   statusline = { "NvimTree" },
     -- },
     -- Use a single global statusline (Neovim 0.7+)
-    globalstatus = true,
+    -- globalstatus = true,
   },
   sections = {
     lualine_a = { "mode" },
@@ -111,6 +122,25 @@ require("lualine").setup({
       },
     },
     -- lualine_z = { "location" },  -- Line:Column
+  },
+  inactive_sections = {
+      lualine_c = {
+          { "filename", path = 1, color = inactive_color },
+      },
+      lualine_x = {
+          { "encoding",   color = inactive_color },
+          { "fileformat", color = inactive_color },
+          { "filetype",   color = inactive_color },
+      },
+      -- lualine_y = { displayFileLines },
+      -- lualine_z = {
+      --   {
+      --       displayRow
+      --   },
+      --   {
+      --       displayColumn
+      --   }
+      -- }
   },
   extensions = {
     "nvim-tree",

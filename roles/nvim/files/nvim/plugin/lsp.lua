@@ -2,18 +2,6 @@
 --
 -- LSP provides IDE features: go-to-definition, find references, hover docs,
 -- rename, code actions, diagnostics, etc.
---
--- Architecture:
---   mason.nvim       — Installs LSP servers, linters, formatters (set up in 01-mason.lua)
---   mason-lspconfig  — Bridges mason.nvim and nvim-lspconfig (auto-setup installed servers)
---   nvim-lspconfig   — Configures Neovim's built-in LSP client to talk to servers
---
--- How it works:
---   1. Mason installs the LSP server binaries (e.g., rust-analyzer, clangd, lua_ls)
---   2. mason-lspconfig detects installed servers and calls lspconfig.X.setup() for each
---   3. nvim-lspconfig tells Neovim how to start and communicate with each server
---   4. When you open a file, Neovim starts the appropriate server and attaches to the buffer
-
 vim.pack.add({
   "https://github.com/williamboman/mason-lspconfig.nvim",
   "https://github.com/neovim/nvim-lspconfig",
@@ -28,6 +16,8 @@ require("mason-lspconfig").setup({
     "lua_ls",          -- Lua (for editing Neovim config)
     "clangd",          -- C / C++
     "copilot",
+    "docker_language_server",
+    "cmake"
   },
   -- Automatically set up servers installed via Mason
   automatic_installation = true,
@@ -81,12 +71,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
     map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
     map("n", "gr", vim.lsp.buf.references, "List references")
-    map("n", "gt", vim.lsp.buf.type_definition, "Go to type definition")
+    -- map("n", "gt", vim.lsp.buf.type_definition, "Go to type definition")
 
     -- Information
     map("n", "K", vim.lsp.buf.hover, "Hover documentation")
-    map("n", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
-    map("i", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
+    -- map("n", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
+    -- map("i", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
 
     -- Actions
     map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")

@@ -1,0 +1,22 @@
+---
+# Install LSP servers on Debian/Ubuntu
+- name: Install LSP servers via apt (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - clangd
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Install common LSP servers (npm global) on Debian/Ubuntu
+  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+  when: ansible_os_family == "Debian"
+
+- name: Install cmake-language-server via pip (Debian/Ubuntu)
+  ansible.builtin.pip:
+    name: cmake-language-server
+    state: present
+    executable: pip3
+  when: ansible_os_family == "Debian"

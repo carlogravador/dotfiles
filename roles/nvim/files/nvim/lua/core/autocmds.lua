@@ -52,3 +52,16 @@ autocmd("VimResized", {
 --   desc = "Remove trailing whitespace on save",
 -- })
 
+-- Only highlight cursorline in the active window
+local set_cursorline = function(event, value)
+  autocmd(event, {
+    group = augroup("cursorline_control", { clear = false }),
+    callback = function()
+      vim.opt_local.cursorline = value
+    end,
+  })
+end
+vim.api.nvim_create_augroup("cursorline_control", { clear = true })
+set_cursorline("WinLeave", false)
+set_cursorline("WinEnter", true)
+

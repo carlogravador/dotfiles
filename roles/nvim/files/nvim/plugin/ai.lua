@@ -62,16 +62,19 @@ require("sidekick").setup({
   },
 })
 
+-- Enable sidekick file watch for attached sessions (configuration workaround for PR #173)
+require("sidekick.cli.watch").enable()
+
 -- ── Keymaps ──────────────────────────────────────────────────
 local map = vim.keymap.set
 
 map({ "n", "t", "i", "x" }, "<c-.>", function()
-  require("sidekick.cli").toggle({ name = "copilot", focus = true })
-end, { desc = "Sidekick Toggle" })
+  require("sidekick.cli").focus({ name = "copilot"})
+end, { desc = "Sidekick Focus" })
 
 map("n", "<leader>aa", function()
   require("sidekick.cli").toggle({ name = "copilot", focus = true })
-end, { desc = "Sidekick Toggle CLI" })
+end, { desc = "Sidekick Toggle" })
 
 map("n", "<leader>as", function()
   require("sidekick.cli").select({ filter = { installed = true } })

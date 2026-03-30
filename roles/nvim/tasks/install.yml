@@ -27,6 +27,20 @@
     - tree-sitter-cli   # Parser generator (used by nvim-treesitter)
     - cmake         # Build tool needed for some treesitter parsers
     - unzip         # Needed by Mason to install some LSP servers
+    - llvm         # Provides clangd (C/C++ language server)
+  when: ansible_os_family == "Darwin"
+
+# Install LSP server binaries via OS package managers / language package managers
+# (NPM / pip) so we don't rely on Mason during editor runtime.
+- name: Install common LSP servers (npm global) on macOS
+  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+  when: ansible_os_family == "Darwin"
+
+- name: Install cmake-language-server via pip (macOS)
+  ansible.builtin.pip:
+    name: cmake-language-server
+    state: present
+    executable: pip3
   when: ansible_os_family == "Darwin"
 
 # --- Ubuntu / Debian (apt) ---
@@ -58,7 +72,25 @@
     - cmake
     - unzip
     - curl
+    - clangd
   become: true
+  when: ansible_os_family == "Debian"
+
+# Install LSP servers via language package managers (npm/pip) on Debian/Ubuntu
+- name: Install common LSP servers (npm global) on Debian/Ubuntu
+  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+  when: ansible_os_family == "Debian"
+
+- name: Install cmake-language-server via pip (Debian/Ubuntu)
+  ansible.builtin.pip:
+    name: cmake-language-server
+    state: present
+    executable: pip3
+  when: ansible_os_family == "Debian"
+
+# Optional: include system-specific LSP installation tasks
+- name: Include additional LSP install tasks
+  ansible.builtin.include_tasks: install_lsp.yml
   when: ansible_os_family == "Debian"
 
 # On Debian/Ubuntu, fd is installed as "fdfind". Create a symlink so
