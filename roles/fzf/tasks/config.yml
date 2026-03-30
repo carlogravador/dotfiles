@@ -1,0 +1,9 @@
+---
+# roles/fzf/tasks/config.yml — Deploy fzf env file as symlink
+- name: Deploy .fzfenv.sh symlink
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/.fzfenv.sh"
+    dest: "{{ ansible_env.HOME }}/.config/fzf/.fzfenv.sh"
+    state: link
+    force: yes
+    mode: "0644"

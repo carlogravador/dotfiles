@@ -1,0 +1,47 @@
+---
+# roles/fzf/tasks/install.yml — Ensure fzf config directory exists and install fzf binary
+- name: Ensure fzf config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/fzf"
+    state: directory
+    mode: "0755"
+
+- name: Check for existing fzf binary
+  ansible.builtin.command:
+    cmd: "command -v fzf"
+  register: fzf_check
+  ignore_errors: true
+  changed_when: false
+  failed_when: false
+
+- name: Install fzf via Homebrew (macOS)
+  community.general.homebrew:
+    name: fzf
+    state: present
+    update_homebrew: yes
+  when: ansible_os_family == "Darwin" and fzf_check.rc != 0
+  become: false
+
+- name: Install fzf via package manager (Linux)
+  ansible.builtin.package:
+    name: fzf
+    state: present
+  become: yes
+  when: ansible_os_family != "Darwin" and fzf_check.rc != 0
+
+- name: Fallback: Install fzf from git (user-local)
+  ansible.builtin.git:
+    repo: "https://github.com/junegunn/fzf.git"
+    dest: "{{ ansible_env.HOME }}/.fzf"
+    depth: 1
+    update: no
+  when: fzf_check.rc != 0
+  become: false
+
+- name: Run fzf install script (if installed from git)
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/.fzf/install --all"
+  args:
+    creates: "{{ ansible_env.HOME }}/.fzf/bin/fzf"
+  when: fzf_check.rc != 0
+  become: false

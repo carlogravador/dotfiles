@@ -3,7 +3,9 @@
 -- The 00- prefix ensures this file is sourced before all other plugin/
 -- files, so the colorscheme is available immediately on startup.
 
-vim.pack.add({ "https://github.com/dracula/vim.git" })
+vim.pack.add({
+  "https://github.com/folke/tokyonight.nvim.git"
+})
 
 vim.opt.background = "dark"
-vim.cmd.colorscheme("dracula")
+vim.cmd.colorscheme("tokyonight")

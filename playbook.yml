@@ -24,3 +24,5 @@
       tags: [nvim]
     - role: tmux
       tags: [tmux]
+    - role: fzf
+      tags: [fzf]
