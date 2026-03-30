@@ -1,0 +1,42 @@
+---
+# Deploy tmux configuration files.
+#
+# Ansible Concepts:
+#   - "ansible.builtin.file" manages files and directories (create, delete, symlink).
+#   - "state: directory" ensures a directory exists (creates it if missing).
+#   - "state: link" creates a symbolic link. "src" is the target, "dest" is the link path.
+#   - "role_path" is a magic variable that resolves to the role's root directory
+#     (e.g., /path/to/dotfiles/roles/tmux). This makes paths portable.
+#   - We symlink the entire tmux config directory rather than copying it.
+#     This means edits in the repo are immediately reflected — no re-run needed.
+#   - "mode" with execute bit ensures the status-bar scripts can be run by tmux.
+
+- name: Ensure ~/.config directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config"
+    state: directory
+    mode: "0755"
+
+# Remove any existing tmux config (file or directory) so the symlink
+# can be created cleanly. Without this, the symlink task would fail
+# if ~/.config/tmux already exists as a regular directory.
+- name: Remove existing tmux config if present
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/tmux"
+    state: absent
+
+- name: Symlink tmux config from dotfiles repo
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/tmux"
+    dest: "{{ ansible_env.HOME }}/.config/tmux"
+    state: link
+
+# The status-bar scripts must be executable so tmux can run them via #(...).
+- name: Ensure status-bar scripts are executable
+  ansible.builtin.file:
+    path: "{{ role_path }}/files/tmux/scripts/{{ item }}"
+    mode: "0755"
+  loop:
+    - cpu.sh
+    - disk.sh
+    - ram.sh

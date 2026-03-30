@@ -1,0 +1,14 @@
+---
+# Entry point for the tmux role.
+#
+# Ansible Concepts:
+#   - "include_tasks" loads and runs tasks from another file.
+#   - This pattern keeps files small and focused: one for installing
+#     dependencies, one for deploying configuration.
+#   - When Ansible runs a role, it looks for tasks/main.yml automatically.
+
+- name: Install tmux and dependencies
+  ansible.builtin.include_tasks: install.yml
+
+- name: Deploy tmux configuration
+  ansible.builtin.include_tasks: config.yml

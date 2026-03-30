@@ -1,0 +1,40 @@
+---
+# Install tmux and bootstrap the TPM plugin manager.
+#
+# Ansible Concepts:
+#   - "when" is a conditional. The task only runs if the condition is true.
+#   - "ansible_os_family" is a fact gathered automatically (e.g., "Darwin" for macOS,
+#     "Debian" for Ubuntu/Debian).
+#   - "community.general.homebrew" manages Homebrew packages on macOS.
+#   - "ansible.builtin.apt" manages packages on Debian/Ubuntu.
+#   - "ansible.builtin.git" clones or updates a Git repository.
+
+# --- macOS (Homebrew) ---
+
+- name: Install tmux via Homebrew (macOS)
+  community.general.homebrew:
+    name: tmux
+    state: present
+  when: ansible_os_family == "Darwin"
+
+# --- Ubuntu / Debian (apt) ---
+
+- name: Install tmux via apt (Ubuntu/Debian)
+  ansible.builtin.apt:
+    name: tmux
+    state: present
+    update_cache: true
+  become: true
+  when: ansible_os_family == "Debian"
+
+# --- TPM (Tmux Plugin Manager) ---
+
+# TPM is cloned directly into the config directory so tmux can find it at
+# the path referenced in tmux.conf: ~/.config/tmux/plugins/tpm/tpm
+# The plugins/ directory is gitignored to keep plugin data out of the repo.
+- name: Clone TPM into tmux config plugins directory
+  ansible.builtin.git:
+    repo: "https://github.com/tmux-plugins/tpm"
+    dest: "{{ ansible_env.HOME }}/.config/tmux/plugins/tpm"
+    version: master
+    update: true

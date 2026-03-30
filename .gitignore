@@ -1,1 +1,4 @@
 nvim-pack-lock.json
+
+# tmux plugins are managed by TPM at runtime — not committed to the repo
+roles/tmux/files/tmux/plugins/

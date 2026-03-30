@@ -22,3 +22,5 @@
     # To add a new tool later, create roles/<tool>/ and add it here.
     - role: nvim
       tags: [nvim]
+    - role: tmux
+      tags: [tmux]
