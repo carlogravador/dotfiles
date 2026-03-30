@@ -43,6 +43,16 @@ require("sidekick").setup({
         hide_esc   = { "<S-Esc>", "hide", mode = "n", desc = "hide the terminal window" },
       },
     },
+    mux = {
+      -- Use tmux for terminal multiplexing (optional, can also use embedded terminals)
+      enabled = true,
+      backend = "tmux",
+      create = "split",
+      split = {
+        vertical = true,
+        size = 0.4
+      }
+    },
     tools = {
       copilot = {
         cmd = { "copilot" },

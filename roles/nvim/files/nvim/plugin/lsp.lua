@@ -26,7 +26,7 @@ vim.pack.add({
 require("mason-lspconfig").setup({
   ensure_installed = {
     "lua_ls",          -- Lua (for editing Neovim config)
-    -- "clangd",          -- C / C++
+    "clangd",          -- C / C++
     "copilot",
   },
   -- Automatically set up servers installed via Mason
