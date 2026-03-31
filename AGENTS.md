@@ -51,7 +51,6 @@ Plugins are managed by `vim.pack` (Neovim 0.12+ built-in plugin manager):
 :lua vim.pack.update({'name'})      — Update a specific plugin
 :lua vim.pack.del({'name'})         — Delete a plugin from disk
 :checkhealth vim.pack               — Diagnose plugin issues
-:Mason                              — Manage LSP servers, DAP adapters, linters, formatters
 ```
 
 The `nvim-pack-lock.json` lockfile is committed for reproducible installs.
@@ -71,7 +70,7 @@ The `nvim-pack-lock.json` lockfile is committed for reproducible installs.
 - `lua/core/*.lua` files execute side effects directly (set options, create keymaps). No return value.
 - `plugin/*.lua` files are **auto-sourced by Neovim** in alphabetical order (no `require()` needed).
   Each file calls `vim.pack.add()` for its own plugins, then configures them.
-- Use numeric prefixes (`00-`, `01-`) to force load order where needed (e.g., colorscheme, mason).
+- Use numeric prefixes (`00-`, `01-`) to force load order where needed (e.g., colorscheme).
 - One file per plugin concern. One file per concern in `core/`.
 
 ### Requires and aliases

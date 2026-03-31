@@ -6,7 +6,6 @@
 -- Architecture:
 --   nvim-dap          — The DAP client (talks to debug adapters)
 --   nvim-dap-ui       — UI panels for variables, breakpoints, call stack, REPL
---   mason-nvim-dap    — Auto-install debug adapters via Mason
 --   codelldb          — Debug adapter for Rust, C, and C++ (based on LLDB)
 --
 -- How DAP works:
@@ -29,7 +28,6 @@ vim.pack.add({
   "https://github.com/mfussenegger/nvim-dap",
   "https://github.com/rcarriga/nvim-dap-ui",
   "https://github.com/nvim-neotest/nvim-nio",
-  "https://github.com/jay-babu/mason-nvim-dap.nvim",
 })
 
 local dap = require("dap")
@@ -72,19 +70,6 @@ dap.listeners.before.event_exited["dapui_config"] = function()
   dapui.close()
 end
 
--- ── mason-nvim-dap — Auto-install debug adapters via Mason ───
--- Requires mason.nvim to be set up first (done in 01-mason.lua).
-require("mason-nvim-dap").setup({
-  -- Debug adapters to auto-install
-  ensure_installed = {
-    "codelldb",  -- LLDB-based adapter for Rust, C, C++
-  },
-  -- Automatically configure installed adapters
-  automatic_installation = true,
-  -- Use default handler (auto-configures adapters with sensible defaults)
-  handlers = {},
-})
-
 -- ── Breakpoint signs ─────────────────────────────────────────
 -- Customize how breakpoints look in the sign column
 vim.fn.sign_define("DapBreakpoint", {
@@ -105,26 +90,6 @@ vim.fn.sign_define("DapStopped", {
   linehl = "DapStoppedLine",
   numhl = "",
 })
-
--- ── codelldb adapter configuration ───────────────────────────
--- mason-nvim-dap's handlers auto-configure codelldb, but if you
--- need to override, you can do it here:
---
--- The adapter is the program that nvim-dap talks to.
--- codelldb speaks the DAP protocol and controls LLDB under the hood.
---
--- If mason-nvim-dap doesn't configure it automatically, uncomment:
--- local mason_path = vim.fn.stdpath("data") .. "/mason"
--- local codelldb_path = mason_path .. "/bin/codelldb"
---
--- dap.adapters.codelldb = {
---   type = "server",
---   port = "${port}",
---   executable = {
---     command = codelldb_path,
---     args = { "--port", "${port}" },
---   },
--- }
 
 -- ── Debug configurations per language ────────────────────────
 -- These define HOW to start debugging for each language.

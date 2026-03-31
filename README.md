@@ -38,19 +38,12 @@ Modular Lua configuration managed by [lazy.nvim](https://github.com/folke/lazy.n
 
 | Plugin | Purpose |
 |--------|---------|
-| [mason.nvim](https://github.com/williamboman/mason.nvim) + [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP server management and configuration |
 | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) | Autocompletion (LSP, buffer, path, snippets) |
 | [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | Syntax highlighting and code understanding |
 | [fzf-lua](https://github.com/ibhagwan/fzf-lua) | Fuzzy finder (files, grep, buffers, symbols) |
 | [nvim-tree.lua](https://github.com/nvim-tree/nvim-tree.lua) | File explorer |
 | [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) | Statusline |
 | [nvim-dap](https://github.com/mfussenegger/nvim-dap) + [nvim-dap-ui](https://github.com/rcarriga/nvim-dap-ui) | Debugging (codelldb for Rust/C/C++) |
-
-**LSP servers auto-installed via Mason:**
-
-- `lua_ls` — Lua
-- `rust_analyzer` — Rust
-- `clangd` — C / C++
 
 **Key keybindings (leader = Space):**
 
