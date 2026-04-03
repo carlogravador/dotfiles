@@ -44,7 +44,9 @@ local function send_file_selection_to_sidekick(selected)
       else
         path = path:match("%S+") or path
       end
+      -- remove trailing :<line> (e.g. file.lua:123) if present
       path = path:match("^%s*(.-)%s*$")
+      path = path:gsub(":%d+$", "")
       if path ~= "" then
         pcall(cli.send, { msg = "@" .. path })
       end
