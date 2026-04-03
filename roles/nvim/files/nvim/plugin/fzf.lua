@@ -7,6 +7,51 @@ vim.pack.add({
 
 local fzf = require("fzf-lua")
 
+local function send_file_selection_to_sidekick(selected)
+  if not selected then
+    return
+  end
+  local items = {}
+  if type(selected) == "string" then
+    for s in selected:gmatch("[^\r\n]+") do
+      table.insert(items, s)
+    end
+  elseif type(selected) == "table" then
+    items = selected
+  end
+
+  local ok, cli = pcall(require, "sidekick.cli")
+  if not ok or type(cli.send) ~= "function" then
+    return
+  end
+
+  for _, item in ipairs(items) do
+    if type(item) == "string" and item ~= "" then
+      local path = item
+      local slash_pos = path:find("/")
+      if slash_pos then
+        -- Walk left from the first slash to find the start of the path token
+        local start_pos = slash_pos
+        while start_pos > 1 do
+          local ch = path:sub(start_pos - 1, start_pos - 1)
+          if ch:match("[%w._%-]") then
+            start_pos = start_pos - 1
+          else
+            break
+          end
+        end
+        path = path:sub(start_pos)
+      else
+        path = path:match("%S+") or path
+      end
+      path = path:match("^%s*(.-)%s*$")
+      if path ~= "" then
+        pcall(cli.send, { msg = "@" .. path })
+      end
+    end
+  end
+end
+
 fzf.setup({
   -- Use a "borderless" profile for a clean look, then override as needed
   "fzf-vim",
@@ -29,6 +74,14 @@ fzf.setup({
       ["<C-e>"] = "preview-down",
     },
   },
+  actions = {
+    files = {
+      ["ctrl-s"] = send_file_selection_to_sidekick
+    },
+    buffers = {
+      ["ctrl-s"] = send_file_selection_to_sidekick
+    }
+  }
 })
 
 fzf.register_ui_select()
