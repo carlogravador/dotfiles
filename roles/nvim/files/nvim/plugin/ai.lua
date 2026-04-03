@@ -19,20 +19,15 @@
 --   @diff         — git diff
 
 vim.pack.add({
-  "https://github.com/github/copilot.vim",
   "https://github.com/folke/sidekick.nvim",
 })
 
--- ── GitHub Copilot ─────────────────────────────────────────
--- Inline code suggestions. Type and Copilot suggests completions.
--- Accept with <Tab>, dismiss with <C-]>, cycle with <M-]>/<M-[>.
--- (copilot.vim loads its plugin script automatically — no setup call needed)
 
 -- ── sidekick.nvim ───────────────────────────────────────────
 require("sidekick").setup({
-  nes = {
-    enabled = false
-  },
+  -- nes = {
+  --   enabled = false
+  -- },
   cli = {
     watch = true,
     win = {
@@ -103,12 +98,12 @@ map({ "n", "x" }, "<leader>ap", function()
   require("sidekick.cli").prompt()
 end, { desc = "Sidekick Select Prompt" })
 
--- map("n", "<tab>", function()
---   -- If there is a next edit, jump to it; otherwise apply it if any
---   if not require("sidekick").nes_jump_or_apply() then
---     return "<Tab>"  -- fallback to normal tab
---   end
--- end, { expr = true, desc = "Goto/Apply Next Edit Suggestion" })
+map("n", "<tab>", function()
+  -- If there is a next edit, jump to it; otherwise apply it if any
+  if not require("sidekick").nes_jump_or_apply() then
+    return "<Tab>"  -- fallback to normal tab
+  end
+end, { expr = true, desc = "Goto/Apply Next Edit Suggestion" })
 
 -- Example of a keybinding to open opencode directly:
 -- map({ "n" }, "<leader>oc", function()

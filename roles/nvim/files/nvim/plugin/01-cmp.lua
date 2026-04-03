@@ -5,9 +5,10 @@
 -- and supports function signature help while typing arguments.
 
 vim.pack.add({
-  { src = "https://github.com/saghen/blink.cmp", version = "1.*" },
+  { src = "https://github.com/saghen/blink.cmp", version = "v1.10.1" },
   -- Curated snippet library for many languages (VSCode format)
   "https://github.com/rafamadriz/friendly-snippets",
+  "https://github.com/fang2hou/blink-copilot.git"
 })
 
 require("blink.cmp").setup({
@@ -27,10 +28,38 @@ require("blink.cmp").setup({
     -- ["<C-h>"] = { "snippet_backward", "fallback" },
   },
 
+  completion = {
+    menu = {
+      border = 'rounded',
+      draw = {
+        columns = {
+          { "label", gap = 1 },
+          { "kind_icon", "kind", gap = 1 }
+        },
+      }
+    },
+    documentation = { 
+      auto_show = true,
+      window = {
+        border = 'rounded'
+      }
+    },
+    ghost_text = {
+      enabled = true
+    }
+  },
+
   -- ── Completion Sources ────────────────────────────────────────
   -- Order matters: items from earlier sources rank higher.
   sources = {
-    default = { "lsp", "path", "snippets", "buffer" },
+    default = { "copilot", "lsp", "path", "snippets", "buffer", },
+    providers = {
+      copilot = {
+        name = "copilot",
+        module = "blink-copilot",
+        async = true,
+      },
+    },
   },
 
   -- ── Snippets ──────────────────────────────────────────────────
@@ -43,7 +72,9 @@ require("blink.cmp").setup({
   -- Show a floating window with the current function's signature while
   -- typing arguments (uses the LSP signatureHelp capability).
   signature = {
-    enabled = true,
+    window = {
+      border = 'single'
+    }
   },
 
   -- ── Appearance ────────────────────────────────────────────────
@@ -51,5 +82,12 @@ require("blink.cmp").setup({
     -- Render kind icons using the "mono" Nerd Font variant
     nerd_font_variant = "mono",
   },
+
+  fuzzy = {
+    prebuilt_binaries = {
+      force_version = "v*",
+    }
+  }
+
 })
 

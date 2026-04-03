@@ -6,6 +6,8 @@
 
 local opt = vim.opt
 
+opt.winborder = "rounded"  -- Use rounded borders for floating windows (e.g., LSP hover, diagnostics)
+
 -- Line numbers
 opt.number = true         -- Show absolute line number on current line
 opt.relativenumber = true -- Show relative line numbers (makes j/k jumps easy)
