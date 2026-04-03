@@ -31,6 +31,8 @@ fzf.setup({
   },
 })
 
+fzf.register_ui_select()
+
 -- ── Commands ─────────────────────────────────────────────
 -- :Files [dir]  and  :Rg [dir]  mirror classic fzf.vim commands,
 -- with tab-completion for directories so you can scope the search.

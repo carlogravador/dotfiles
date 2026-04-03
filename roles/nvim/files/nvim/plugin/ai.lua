@@ -96,7 +96,7 @@ map("x", "<leader>av", function()
   require("sidekick.cli").send({ msg = "{selection}" })
 end, { desc = "Send Visual Selection" })
 
-map({ "n", "x" }, "<leader>pp", function()
+map({ "n", "x" }, "<leader>ap", function()
   require("sidekick.cli").prompt()
 end, { desc = "Sidekick Select Prompt" })
 
