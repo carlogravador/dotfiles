@@ -6,6 +6,14 @@ vim.pack.add({
   "https://github.com/neovim/nvim-lspconfig",
 })
 
+-- Advertise blink.cmp's extended completion capabilities (snippets, label
+-- details, etc.) to every language server before they are started.
+-- This must be called before vim.lsp.enable() so the capabilities are
+-- included in the first initialize request sent to each server.
+vim.lsp.config("*", {
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
+
 -- lsp servers we want to use and their configuration
 -- see `:h lspconfig-all` for available servers and their settings
 vim.lsp.enable({
