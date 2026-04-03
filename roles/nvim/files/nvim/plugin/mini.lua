@@ -11,3 +11,6 @@ vim.pack.add({
 require("mini.pairs").setup()
 require("mini.surround").setup()
 require("mini.diff").setup()
+
+local map = vim.keymap.set
+map("n", "<leader>md", "<cmd>lua MiniDiff.toggle_overlay()<CR>", {desc = "MiniDiff Toggle" })
