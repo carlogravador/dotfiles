@@ -22,7 +22,6 @@ vim.pack.add({
   "https://github.com/folke/sidekick.nvim",
 })
 
-
 -- ── sidekick.nvim ───────────────────────────────────────────
 require("sidekick").setup({
   -- nes = {
@@ -38,7 +37,7 @@ require("sidekick").setup({
         -- Override prompt key to <leader>pp, terminal mode only
         prompt = { "<C-\\>", "prompt", mode = "t", desc = "insert prompt or context" },
         stopinsert = { "<S-Esc>", "stopinsert", mode = "t", desc = "enter normal mode" },
-        hide_esc   = { "<S-Esc>", "hide", mode = "n", desc = "hide the terminal window" },
+        hide_esc = { "<S-Esc>", "hide", mode = "n", desc = "hide the terminal window" },
       },
     },
     mux = {
@@ -48,8 +47,8 @@ require("sidekick").setup({
       create = "split",
       split = {
         vertical = true,
-        size = 0.4
-      }
+        size = 0.4,
+      },
     },
     tools = {
       copilot = {
@@ -67,7 +66,7 @@ require("sidekick.cli.watch").enable()
 local map = vim.keymap.set
 
 map({ "n", "t", "i", "x" }, "<c-.>", function()
-  require("sidekick.cli").focus({ name = "copilot"})
+  require("sidekick.cli").focus({ name = "copilot" })
 end, { desc = "Sidekick Focus" })
 
 map("n", "<leader>aa", function()
@@ -101,7 +100,7 @@ end, { desc = "Sidekick Select Prompt" })
 map("n", "<tab>", function()
   -- If there is a next edit, jump to it; otherwise apply it if any
   if not require("sidekick").nes_jump_or_apply() then
-    return "<Tab>"  -- fallback to normal tab
+    return "<Tab>" -- fallback to normal tab
   end
 end, { expr = true, desc = "Goto/Apply Next Edit Suggestion" })
 

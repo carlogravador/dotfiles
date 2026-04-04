@@ -4,7 +4,7 @@
 -- files, so the colorscheme is available immediately on startup.
 
 vim.pack.add({
-  "https://github.com/folke/tokyonight.nvim.git"
+  "https://github.com/folke/tokyonight.nvim.git",
 })
 
 vim.opt.background = "dark"

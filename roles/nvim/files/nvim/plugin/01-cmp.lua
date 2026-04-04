@@ -8,7 +8,7 @@ vim.pack.add({
   { src = "https://github.com/saghen/blink.cmp", version = "v1.10.1" },
   -- Curated snippet library for many languages (VSCode format)
   "https://github.com/rafamadriz/friendly-snippets",
-  "https://github.com/fang2hou/blink-copilot.git"
+  "https://github.com/fang2hou/blink-copilot.git",
 })
 
 require("blink.cmp").setup({
@@ -20,12 +20,15 @@ require("blink.cmp").setup({
   keymap = {
     preset = "default",
     ["<CR>"] = { "accept", "fallback" },
-    ['<Tab>'] = {
+    ["<Tab>"] = {
       function(cmp)
-        if cmp.snippet_active() then return cmp.accept()
-        else return cmp.select_and_accept() end
+        if cmp.snippet_active() then
+          return cmp.accept()
+        else
+          return cmp.select_and_accept()
+        end
       end,
-      'fallback'
+      "fallback",
     },
     -- -- Move up dow the selection menu with Ctrl+j/k
     ["<C-j>"] = { "select_next", "fallback" },
@@ -38,32 +41,31 @@ require("blink.cmp").setup({
     ["<C-h>"] = { "snippet_backward", "fallback" },
   },
 
-
   completion = {
     menu = {
-      border = 'rounded',
+      border = "rounded",
       draw = {
         columns = {
           { "label", gap = 1 },
-          { "kind_icon", "kind", gap = 1 }
+          { "kind_icon", "kind", gap = 1 },
         },
-      }
+      },
     },
-    documentation = { 
+    documentation = {
       auto_show = true,
       window = {
-        border = 'rounded'
-      }
+        border = "rounded",
+      },
     },
     ghost_text = {
-      enabled = true
-    }
+      enabled = true,
+    },
   },
 
   -- ── Completion Sources ────────────────────────────────────────
   -- Order matters: items from earlier sources rank higher.
   sources = {
-    default = { "copilot", "lsp", "path", "snippets", "buffer", },
+    default = { "copilot", "lsp", "path", "snippets", "buffer" },
     providers = {
       copilot = {
         name = "copilot",
@@ -95,8 +97,6 @@ require("blink.cmp").setup({
   fuzzy = {
     prebuilt_binaries = {
       force_version = "v*",
-    }
-  }
-
+    },
+  },
 })
-

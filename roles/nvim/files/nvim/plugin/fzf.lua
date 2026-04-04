@@ -65,10 +65,9 @@ fzf.setup({
       hidden = false,
       default = "builtin",
       -- default = "bat",
-      layout = "flex",       -- Auto-switch between horizontal/vertical preview
-      flip_columns = 120,    -- Switch to vertical preview if window < 120 cols
+      layout = "flex", -- Auto-switch between horizontal/vertical preview
+      flip_columns = 120, -- Switch to vertical preview if window < 120 cols
     },
-
   },
   keymap = {
     builtin = {
@@ -78,9 +77,9 @@ fzf.setup({
   },
   actions = {
     files = {
-      ["ctrl-s"] = send_file_selection_to_sidekick
+      ["ctrl-s"] = send_file_selection_to_sidekick,
     },
-  }
+  },
 })
 
 fzf.register_ui_select()

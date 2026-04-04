@@ -14,4 +14,4 @@ require("mini.diff").setup()
 require("mini.tabline").setup()
 
 local map = vim.keymap.set
-map("n", "<leader>md", "<cmd>lua MiniDiff.toggle_overlay()<CR>", {desc = "MiniDiff Toggle" })
+map("n", "<leader>md", "<cmd>lua MiniDiff.toggle_overlay()<CR>", { desc = "MiniDiff Toggle" })

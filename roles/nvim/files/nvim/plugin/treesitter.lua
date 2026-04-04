@@ -36,4 +36,3 @@ require("nvim-treesitter.install").install({
   "python",
   "yaml",
 })
-

@@ -64,4 +64,3 @@ end
 vim.api.nvim_create_augroup("cursorline_control", { clear = true })
 set_cursorline("WinLeave", false)
 set_cursorline("WinEnter", true)
-

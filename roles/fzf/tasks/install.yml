@@ -29,7 +29,7 @@
   become: yes
   when: ansible_os_family != "Darwin" and fzf_check.rc != 0
 
-- name: Fallback: Install fzf from git (user-local)
+- name: "Fallback: Install fzf from git (user-local)"
   ansible.builtin.git:
     repo: "https://github.com/junegunn/fzf.git"
     dest: "{{ ansible_env.HOME }}/.fzf"

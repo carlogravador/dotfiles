@@ -40,20 +40,20 @@ dapui.setup({
   layouts = {
     {
       elements = {
-        { id = "scopes", size = 0.40 },      -- Variables in current scope
-        { id = "breakpoints", size = 0.20 },  -- List of all breakpoints
-        { id = "stacks", size = 0.20 },       -- Call stack
-        { id = "watches", size = 0.20 },      -- Watch expressions
+        { id = "scopes", size = 0.40 }, -- Variables in current scope
+        { id = "breakpoints", size = 0.20 }, -- List of all breakpoints
+        { id = "stacks", size = 0.20 }, -- Call stack
+        { id = "watches", size = 0.20 }, -- Watch expressions
       },
-      size = 40,         -- Width in columns
+      size = 40, -- Width in columns
       position = "left",
     },
     {
       elements = {
-        { id = "repl", size = 0.50 },     -- Debug REPL
-        { id = "console", size = 0.50 },  -- Program output
+        { id = "repl", size = 0.50 }, -- Debug REPL
+        { id = "console", size = 0.50 }, -- Program output
       },
-      size = 10,         -- Height in lines
+      size = 10, -- Height in lines
       position = "bottom",
     },
   },

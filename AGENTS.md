@@ -38,6 +38,22 @@ ansible-lint playbook.yml   # if ansible-lint is installed
 yamllint .                  # if yamllint is installed
 ```
 
+### Formatting
+
+```bash
+# Format Lua files (stylua, config: .stylua.toml)
+stylua roles/nvim/files/nvim/
+
+# Check Lua formatting without applying changes
+stylua --check roles/nvim/files/nvim/
+
+# Format Ansible/YAML files (yamlfmt, config: .yamlfmt.yml)
+yamlfmt playbook.yml roles/*/tasks/*.yml inventory/localhost.yml
+
+# Check YAML formatting without applying changes
+yamlfmt -dry -lint playbook.yml roles/*/tasks/*.yml inventory/localhost.yml
+```
+
 ### Neovim plugin management
 
 Plugins use `vim.pack` (Neovim 0.12+ built-in — not lazy.nvim). Run inside Neovim:

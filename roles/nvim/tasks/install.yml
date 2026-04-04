@@ -19,15 +19,15 @@
     state: present
   loop:
     - neovim
-    - ripgrep       # Fast regex search (used by fzf-lua live grep)
-    - fd            # Fast file finder (used by fzf-lua file finder)
-    - bat           # preview
-    - fzf           # Fuzzy finder binary (used by fzf-lua)
-    - node          # Required by some LSP servers and Mason packages, and copilot.vim
-    - tree-sitter-cli   # Parser generator (used by nvim-treesitter)
-    - cmake         # Build tool needed for some treesitter parsers
-    - unzip         # Needed by Mason to install some LSP servers
-    - llvm          # Provides clangd (C/C++ language server)
+    - ripgrep # Fast regex search (used by fzf-lua live grep)
+    - fd # Fast file finder (used by fzf-lua file finder)
+    - bat # preview
+    - fzf # Fuzzy finder binary (used by fzf-lua)
+    - node # Required by some LSP servers and Mason packages, and copilot.vim
+    - tree-sitter-cli # Parser generator (used by nvim-treesitter)
+    - cmake # Build tool needed for some treesitter parsers
+    - unzip # Needed by Mason to install some LSP servers
+    - llvm # Provides clangd (C/C++ language server)
   when: ansible_os_family == "Darwin"
 
 # Install LSP server binaries via OS package managers / language package managers
@@ -63,12 +63,12 @@
   loop:
     - neovim
     - ripgrep
-    - fd-find       # fd is packaged as "fd-find" on Debian/Ubuntu
+    - fd-find # fd is packaged as "fd-find" on Debian/Ubuntu
     - fzf
-    - bat           # preview
+    - bat # preview
     - nodejs
     - npm
-    - build-essential  # C compiler, make, etc. (needed for treesitter parsers)
+    - build-essential # C compiler, make, etc. (needed for treesitter parsers)
     - cmake
     - unzip
     - curl

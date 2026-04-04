@@ -28,7 +28,7 @@ vim.lsp.enable({
 
 -- ── Diagnostic Display ───────────────────────────────────────
 vim.diagnostic.config({
-  virtual_text = false,  -- Disable inline diagnostic text (we'll use signs and floating windows instead)
+  virtual_text = false, -- Disable inline diagnostic text (we'll use signs and floating windows instead)
   signs = {
     text = {
       [vim.diagnostic.severity.ERROR] = " ",
@@ -38,14 +38,16 @@ vim.diagnostic.config({
     },
   },
   float = {
-    border = 'rounded'
-  }
+    border = "rounded",
+  },
 })
 
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('my.lsp', {}),
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("my.lsp", {}),
   callback = function(ev)
-    vim.keymap.set('n', '<leader>sd', vim.diagnostic.open_float, {
-      desc = 'Show diagnostics in floating window', buffer = ev.buf })
+    vim.keymap.set("n", "<leader>sd", vim.diagnostic.open_float, {
+      desc = "Show diagnostics in floating window",
+      buffer = ev.buf,
+    })
   end,
 })

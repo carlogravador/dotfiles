@@ -42,34 +42,33 @@ map("n", "<Esc>", function()
   -- If we find a floating window, close it.
   local found_float = false
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_get_config(win).relative ~= '' then
+    if vim.api.nvim_win_get_config(win).relative ~= "" then
       vim.api.nvim_win_close(win, true)
       found_float = true
     end
   end
   if not found_float then
     if vim.opt.hlsearch:get() then
-      vim.fn.setreg('/', '') -- Clear search highlight
+      vim.fn.setreg("/", "") -- Clear search highlight
     else
-      return '<Esc>' -- Default behavior
+      return "<Esc>" -- Default behavior
     end
   end
 end, { desc = "Smart Escape: close float or clear search highlight", noremap = true, silent = true })
 
 -- Highlight word under cursor without moving
-map('n', '*', function()
-  local word = vim.fn.expand('<cword>')
-  vim.fn.setreg('/', '\\<' .. word .. '\\>')
+map("n", "*", function()
+  local word = vim.fn.expand("<cword>")
+  vim.fn.setreg("/", "\\<" .. word .. "\\>")
   vim.opt.hlsearch = true
-end, { noremap = true, silent = true, desc = 'Highlight word under cursor' })
-
+end, { noremap = true, silent = true, desc = "Highlight word under cursor" })
 
 -- Remove trailing whitespace with <leader>cw
-map('n', '<leader>cw', function()
+map("n", "<leader>cw", function()
   local save_cursor = vim.fn.getpos(".")
   vim.cmd([[%s/\s\+$//e]])
   vim.fn.setpos(".", save_cursor)
-end, { noremap = true, silent = true, desc = 'Remove trailing whitespace' })
+end, { noremap = true, silent = true, desc = "Remove trailing whitespace" })
 
 -- Stay in visual mode when indenting
 map("v", "<", "<gv", { desc = "Indent left and reselect" })
@@ -95,24 +94,24 @@ map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
 -- map({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
 
 -- delete != cut
-map('n', 'x', '"_x', {noremap = true, silent = true})
-map('n', 'X', '"_X', {noremap = true, silent = true})
-map('n', 'd', '"_d', {noremap = true, silent = true})
-map('n', 'D', '"_D', {noremap = true, silent = true})
-map('v', 'd', '"_d', {noremap = true, silent = true})
-map('n', 'c', '"_c', {noremap = true, silent = true})
-map('n', 'C', '"_C', {noremap = true, silent = true})
-map('v', 'c', '"_c', {noremap = true, silent = true})
+map("n", "x", '"_x', { noremap = true, silent = true })
+map("n", "X", '"_X', { noremap = true, silent = true })
+map("n", "d", '"_d', { noremap = true, silent = true })
+map("n", "D", '"_D', { noremap = true, silent = true })
+map("v", "d", '"_d', { noremap = true, silent = true })
+map("n", "c", '"_c', { noremap = true, silent = true })
+map("n", "C", '"_C', { noremap = true, silent = true })
+map("v", "c", '"_c', { noremap = true, silent = true })
 
-if vim.fn.has('unnamedplus') then
-  map('n', '<leader>d', '"+d', {noremap = true, silent = true})
-  map('n', '<leader>D', '"+D', {noremap = true, silent = true})
-  map('v', '<leader>d', '"+d', {noremap = true, silent = true})
+if vim.fn.has("unnamedplus") then
+  map("n", "<leader>d", '"+d', { noremap = true, silent = true })
+  map("n", "<leader>D", '"+D', { noremap = true, silent = true })
+  map("v", "<leader>d", '"+d', { noremap = true, silent = true })
 else
-  map('n', '<leader>d', '"*d', {noremap = true, silent = true})
-  map('n', '<leader>D', '"*D', {noremap = true, silent = true})
-  map('v', '<leader>d', '"*d', {noremap = true, silent = true})
+  map("n", "<leader>d", '"*d', { noremap = true, silent = true })
+  map("n", "<leader>D", '"*D', { noremap = true, silent = true })
+  map("v", "<leader>d", '"*d', { noremap = true, silent = true })
 end
 
-map('n', '<leader>+', '<C-a>', {noremap = true, silent = true})
-map('n', '<leader>-', '<C-x>', {noremap = true, silent = true})
+map("n", "<leader>+", "<C-a>", { noremap = true, silent = true })
+map("n", "<leader>-", "<C-x>", { noremap = true, silent = true })

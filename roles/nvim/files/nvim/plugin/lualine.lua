@@ -49,7 +49,7 @@ require("lualine").setup({
       "diff",
     },
     lualine_c = {
-      { "filename", path = 1 },  -- path=1 shows relative path
+      { "filename", path = 1 }, -- path=1 shows relative path
       -- Sidekick: Copilot status
       {
         function()
@@ -123,27 +123,27 @@ require("lualine").setup({
     -- lualine_z = { "location" },  -- Line:Column
   },
   inactive_sections = {
-      lualine_c = {
-          { "filename", path = 1, color = inactive_color },
-      },
-      lualine_x = {
-          { "encoding",   color = inactive_color },
-          { "fileformat", color = inactive_color },
-          { "filetype",   color = inactive_color },
-      },
-      -- lualine_y = { displayFileLines },
-      -- lualine_z = {
-      --   {
-      --       displayRow
-      --   },
-      --   {
-      --       displayColumn
-      --   }
-      -- }
+    lualine_c = {
+      { "filename", path = 1, color = inactive_color },
+    },
+    lualine_x = {
+      { "encoding", color = inactive_color },
+      { "fileformat", color = inactive_color },
+      { "filetype", color = inactive_color },
+    },
+    -- lualine_y = { displayFileLines },
+    -- lualine_z = {
+    --   {
+    --       displayRow
+    --   },
+    --   {
+    --       displayColumn
+    --   }
+    -- }
   },
   extensions = {
     "nvim-tree",
     "fzf",
-    "quickfix"
+    "quickfix",
   },
 })
