@@ -78,4 +78,5 @@ vim.opt.shortmess:append("c")
 
 -- Open all folds by default
 opt.foldenable = false
+opt.foldlevel = 99        -- Don't close all folds when doing `zc` for the first time
 
