@@ -80,9 +80,6 @@ fzf.setup({
     files = {
       ["ctrl-s"] = send_file_selection_to_sidekick
     },
-    buffers = {
-      ["ctrl-s"] = send_file_selection_to_sidekick
-    }
   }
 })
 
