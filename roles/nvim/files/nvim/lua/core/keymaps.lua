@@ -4,7 +4,7 @@
 -- Plugin-specific keymaps are defined in their respective plugin config files.
 --
 -- Vim keymap anatomy:
---   vim.keymap.set(mode, lhs, rhs, opts)
+--   map(mode, lhs, rhs, opts)
 --     mode: "n" = normal, "i" = insert, "v" = visual, "x" = visual block, "t" = terminal
 --     lhs:  the key combination you press
 --     rhs:  the action to perform (command string or Lua function)
@@ -93,3 +93,26 @@ map("n", "N", "Nzzzv", { desc = "Previous search result (centered)" })
 
 -- Delete without yanking (send to black hole register)
 -- map({ "n", "v" }, "<leader>d", '"_d', { desc = "Delete without yanking" })
+
+-- delete != cut
+map('n', 'x', '"_x', {noremap = true, silent = true})
+map('n', 'X', '"_X', {noremap = true, silent = true})
+map('n', 'd', '"_d', {noremap = true, silent = true})
+map('n', 'D', '"_D', {noremap = true, silent = true})
+map('v', 'd', '"_d', {noremap = true, silent = true})
+map('n', 'c', '"_c', {noremap = true, silent = true})
+map('n', 'C', '"_C', {noremap = true, silent = true})
+map('v', 'c', '"_c', {noremap = true, silent = true})
+
+if vim.fn.has('unnamedplus') then
+  map('n', '<leader>d', '"+d', {noremap = true, silent = true})
+  map('n', '<leader>D', '"+D', {noremap = true, silent = true})
+  map('v', '<leader>d', '"+d', {noremap = true, silent = true})
+else
+  map('n', '<leader>d', '"*d', {noremap = true, silent = true})
+  map('n', '<leader>D', '"*D', {noremap = true, silent = true})
+  map('v', '<leader>d', '"*d', {noremap = true, silent = true})
+end
+
+map('n', '<leader>+', '<C-a>', {noremap = true, silent = true})
+map('n', '<leader>-', '<C-x>', {noremap = true, silent = true})

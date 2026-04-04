@@ -19,14 +19,25 @@ require("blink.cmp").setup({
   -- Copilot's <Tab> accept binding in plugin/ai.lua.
   keymap = {
     preset = "default",
-    -- ["<CR>"] = { "accept", "fallback" },
+    ["<CR>"] = { "accept", "fallback" },
+    ['<Tab>'] = {
+      function(cmp)
+        if cmp.snippet_active() then return cmp.accept()
+        else return cmp.select_and_accept() end
+      end,
+      'fallback'
+    },
+    -- -- Move up dow the selection menu with Ctrl+j/k
+    ["<C-j>"] = { "select_next", "fallback" },
+    ["<C-k>"] = { "select_prev", "fallback" },
     -- -- Scroll the documentation popup without leaving completion
-    -- ["<C-f>"] = { "scroll_documentation_down", "fallback" },
-    -- ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+    ["<C-e>"] = { "scroll_documentation_down", "fallback" },
+    ["<C-y>"] = { "scroll_documentation_up" },
     -- -- Jump between snippet placeholders
-    -- ["<C-l>"] = { "snippet_forward", "fallback" },
-    -- ["<C-h>"] = { "snippet_backward", "fallback" },
+    ["<C-l>"] = { "snippet_forward", "fallback" },
+    ["<C-h>"] = { "snippet_backward", "fallback" },
   },
+
 
   completion = {
     menu = {
@@ -72,9 +83,7 @@ require("blink.cmp").setup({
   -- Show a floating window with the current function's signature while
   -- typing arguments (uses the LSP signatureHelp capability).
   signature = {
-    window = {
-      border = 'single'
-    }
+    enabled = true,
   },
 
   -- ── Appearance ────────────────────────────────────────────────

@@ -69,7 +69,7 @@ opt.wildignorecase = true           -- Ignore case in command-line completion
 -- Misc
 opt.mouse = "a"           -- Enable mouse in all modes (useful for scrolling, resizing splits)
 opt.updatetime = 250      -- Faster CursorHold events (used by gitsigns, LSP hover, etc.)
-opt.timeoutlen = 300      -- Time to wait for a mapped key sequence (ms)
+-- opt.timeoutlen = 300      -- Time to wait for a mapped key sequence (ms)
 opt.showmode = false      -- Don't show "-- INSERT --" (lualine shows the mode instead)
 opt.fillchars = { eob = " " }  -- Hide ~ characters on empty lines past end of buffer
 
