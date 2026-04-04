@@ -28,12 +28,13 @@
     - cmake # Build tool needed for some treesitter parsers
     - unzip # Needed by Mason to install some LSP servers
     - llvm # Provides clangd (C/C++ language server)
+    - lua-language-server # Lua LSP server (used by lua_ls in nvim-lspconfig)
   when: ansible_os_family == "Darwin"
 
 # Install LSP server binaries via OS package managers / language package managers
 # (NPM / pip) so we don't rely on Mason during editor runtime.
 - name: Install common LSP servers (npm global) on macOS
-  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+  ansible.builtin.command: npm install -g pyright bash-language-server dockerfile-language-server-nodejs @github/copilot-language-server
   when: ansible_os_family == "Darwin"
 
 - name: Install cmake-language-server via pip (macOS)
@@ -43,25 +44,18 @@
     executable: pip3
   when: ansible_os_family == "Darwin"
 
-# --- Ubuntu / Debian (apt) ---
+# --- Ubuntu / Debian (AppImage) ---
 
-# Neovim in Ubuntu's default repos is often outdated.
-# We add the official Neovim PPA to get a recent stable version.
+# The Neovim PPA is not kept up to date. Instead, we fetch the latest release
+# directly from GitHub, download the AppImage, and register it via
+# update-alternatives so that both `vim` and `nvim` point to it.
 
-- name: Add Neovim PPA (Ubuntu/Debian)
-  ansible.builtin.apt_repository:
-    repo: ppa:neovim-ppa/stable
-    state: present
-  become: true
-  when: ansible_os_family == "Debian"
-
-- name: Install Neovim and dependencies via apt (Ubuntu/Debian)
+- name: Install Neovim runtime dependencies via apt (Ubuntu/Debian)
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
     update_cache: true
   loop:
-    - neovim
     - ripgrep
     - fd-find # fd is packaged as "fd-find" on Debian/Ubuntu
     - fzf
@@ -73,22 +67,85 @@
     - unzip
     - curl
     - clangd
+    - libfuse2 # Required by AppImage runtime
   become: true
   when: ansible_os_family == "Debian"
 
-# Install LSP servers via language package managers (npm/pip) on Debian/Ubuntu
-- name: Install common LSP servers (npm global) on Debian/Ubuntu
-  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+# Query the GitHub Releases API to discover the latest stable Neovim version.
+# "register" saves the HTTP response body so later tasks can read it.
+- name: Get latest Neovim release info from GitHub API (Ubuntu/Debian)
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/neovim/neovim/releases/latest
+    return_content: true
+    # Authenticate when a token is available to avoid the 60 req/h unauthenticated limit.
+    headers: "{{ {'Authorization': 'Bearer ' + github_token} if (github_token | default('') != '') else {} }}"
+  register: nvim_release_info
   when: ansible_os_family == "Debian"
 
-- name: Install cmake-language-server via pip (Debian/Ubuntu)
-  ansible.builtin.pip:
-    name: cmake-language-server
-    state: present
-    executable: pip3
+# Map ansible_architecture (e.g. "aarch64") to the naming used in the AppImage
+# filenames ("arm64"). x86_64 is used as-is.
+- name: Set Neovim version and architecture facts (Ubuntu/Debian)
+  ansible.builtin.set_fact:
+    nvim_version: "{{ nvim_release_info.json.tag_name }}"
+    nvim_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}"
   when: ansible_os_family == "Debian"
 
-# Optional: include system-specific LSP installation tasks
+# Versioned install directory keeps old releases around and makes rollbacks trivial.
+- name: Create versioned Neovim install directory (Ubuntu/Debian)
+  ansible.builtin.file:
+    path: "/opt/neovim/{{ nvim_version }}"
+    state: directory
+    mode: "0755"
+  become: true
+  when: ansible_os_family == "Debian"
+
+# "force: false" (the default) skips the download if the file already exists,
+# making this task idempotent on re-runs.
+- name: Download Neovim AppImage (Ubuntu/Debian)
+  ansible.builtin.get_url:
+    url: "https://github.com/neovim/neovim/releases/download/{{ nvim_version }}/nvim-linux-{{ nvim_arch }}.appimage"
+    dest: "/opt/neovim/{{ nvim_version }}/nvim.appimage"
+    mode: "0755"
+  become: true
+  when: ansible_os_family == "Debian"
+
+# Register the AppImage as a "vim" alternative with priority 60, which is higher
+# than the system vim (usually priority 1) so Neovim wins by default.
+- name: Register Neovim AppImage as vim alternative (Ubuntu/Debian)
+  ansible.builtin.command:
+    cmd: >-
+      update-alternatives --install /usr/bin/vim vim
+      /opt/neovim/{{ nvim_version }}/nvim.appimage 60
+  become: true
+  when: ansible_os_family == "Debian"
+  # update-alternatives --install is always exit 0; suppress spurious "changed" reports.
+  changed_when: false
+
+# Also register under "nvim" so the canonical Neovim binary name works.
+- name: Register Neovim AppImage as nvim alternative (Ubuntu/Debian)
+  ansible.builtin.command:
+    cmd: >-
+      update-alternatives --install /usr/bin/nvim nvim
+      /opt/neovim/{{ nvim_version }}/nvim.appimage 60
+  become: true
+  when: ansible_os_family == "Debian"
+  changed_when: false
+
+- name: Set Neovim AppImage as default vim (Ubuntu/Debian)
+  ansible.builtin.command:
+    cmd: "update-alternatives --set vim /opt/neovim/{{ nvim_version }}/nvim.appimage"
+  become: true
+  when: ansible_os_family == "Debian"
+  changed_when: false
+
+- name: Set Neovim AppImage as default nvim (Ubuntu/Debian)
+  ansible.builtin.command:
+    cmd: "update-alternatives --set nvim /opt/neovim/{{ nvim_version }}/nvim.appimage"
+  become: true
+  when: ansible_os_family == "Debian"
+  changed_when: false
+
+# LSP server installs for Debian/Ubuntu are in install_lsp.yml (included below).
 - name: Include additional LSP install tasks
   ansible.builtin.include_tasks: install_lsp.yml
   when: ansible_os_family == "Debian"

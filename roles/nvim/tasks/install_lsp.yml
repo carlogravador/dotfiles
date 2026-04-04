@@ -1,22 +1,74 @@
 ---
-# Install LSP servers on Debian/Ubuntu
-- name: Install LSP servers via apt (Debian/Ubuntu)
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  loop:
-    - clangd
-  become: true
-  when: ansible_os_family == "Debian"
+# Install LSP servers on Debian/Ubuntu.
+#
+# clangd is already installed via the main apt loop in install.yml.
+# This file handles servers that require npm, pip, or GitHub release downloads.
 
-- name: Install common LSP servers (npm global) on Debian/Ubuntu
-  ansible.builtin.command: npm install -g pyright typescript typescript-language-server bash-language-server dockerfile-language-server-nodejs
+- name: Install common LSP servers via npm (Debian/Ubuntu)
+  ansible.builtin.command: >-
+    npm install -g
+    pyright
+    bash-language-server
+    dockerfile-language-server-nodejs
+    @github/copilot-language-server
   when: ansible_os_family == "Debian"
+  # apt-installed npm writes to /usr/lib/node_modules which is root-owned.
+  become: true
+  changed_when: true
 
 - name: Install cmake-language-server via pip (Debian/Ubuntu)
   ansible.builtin.pip:
     name: cmake-language-server
     state: present
     executable: pip3
+  when: ansible_os_family == "Debian"
+
+# ── lua-language-server (GitHub release) ─────────────────────
+#
+# lua-language-server is not in the Debian/Ubuntu apt repos. We fetch the
+# latest release from GitHub, extract it to a versioned directory under
+# /opt, and symlink the binary into /usr/local/bin — the same pattern used
+# for Neovim above.
+
+- name: Get latest lua-language-server release info from GitHub API (Ubuntu/Debian)
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/LuaLS/lua-language-server/releases/latest
+    return_content: true
+    headers: "{{ {'Authorization': 'Bearer ' + github_token} if (github_token | default('') != '') else {} }}"
+  register: lua_ls_release_info
+  when: ansible_os_family == "Debian"
+
+# lua-ls assets use "x64" / "arm64"; map ansible_architecture accordingly.
+- name: Set lua-language-server version and architecture facts (Ubuntu/Debian)
+  ansible.builtin.set_fact:
+    lua_ls_version: "{{ lua_ls_release_info.json.tag_name }}"
+    lua_ls_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'x64' }}"
+  when: ansible_os_family == "Debian"
+
+- name: Create versioned lua-language-server install directory (Ubuntu/Debian)
+  ansible.builtin.file:
+    path: "/opt/lua-language-server/{{ lua_ls_version }}"
+    state: directory
+    mode: "0755"
+  become: true
+  when: ansible_os_family == "Debian"
+
+# Download and extract the tarball. "creates:" makes this idempotent —
+# the task is skipped if the binary is already present.
+- name: Download and extract lua-language-server tarball (Ubuntu/Debian)
+  ansible.builtin.unarchive:
+    src: "https://github.com/LuaLS/lua-language-server/releases/download/{{ lua_ls_version }}/lua-language-server-{{ lua_ls_version }}-linux-{{ lua_ls_arch }}.tar.gz"
+    dest: "/opt/lua-language-server/{{ lua_ls_version }}"
+    remote_src: true
+    creates: "/opt/lua-language-server/{{ lua_ls_version }}/bin/lua-language-server"
+  become: true
+  when: ansible_os_family == "Debian"
+
+- name: Symlink lua-language-server binary into /usr/local/bin (Ubuntu/Debian)
+  ansible.builtin.file:
+    src: "/opt/lua-language-server/{{ lua_ls_version }}/bin/lua-language-server"
+    dest: /usr/local/bin/lua-language-server
+    state: link
+    force: true
+  become: true
   when: ansible_os_family == "Debian"

@@ -1,0 +1,52 @@
+---
+# .github/workflows/ci.yml — Validate and run the Ansible playbook on Ubuntu 24.04 and macOS 26.
+#
+# Two jobs run in parallel via a matrix (fail-fast: false so both complete regardless).
+# Python is pinned via setup-python so pip installs land in a clean, non-externally-managed
+# venv on both platforms. The GITHUB_TOKEN is forwarded as an Ansible extra-var so the
+# playbook's GitHub API calls (Neovim and lua-language-server release lookups) are
+# authenticated and not subject to the 60-req/h unauthenticated rate limit.
+
+name: Ansible CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-26]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Pin Python so pip is never in an "externally managed" state on either platform.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Install Ansible Galaxy collections
+        run: ansible-galaxy collection install community.general
+
+      # Quick structural check before running the full playbook.
+      - name: Validate playbook syntax
+        run: ansible-playbook playbook.yml --syntax-check
+
+      # Run the full playbook.  Pass the workflow's built-in GITHUB_TOKEN so the
+      # ansible.builtin.uri tasks that query the GitHub Releases API are authenticated.
+      - name: Run playbook
+        run: ansible-playbook playbook.yml -e "github_token=$GITHUB_TOKEN"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
