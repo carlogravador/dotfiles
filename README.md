@@ -66,10 +66,13 @@ Modular Lua configuration using `vim.pack` — the built-in plugin manager intro
 | `<leader>gs` | n | Git status |
 | `<leader>e` | n | Toggle file explorer |
 | `<leader>E` | n | Find current file in explorer |
-| `gd` | n | Go to definition (LSP built-in) |
-| `gr` | n | Find references (LSP built-in) |
-| `K` | n | Hover documentation (LSP built-in) |
-| `<leader>sd` | n | Show diagnostics in floating window |
+| `K` | n | LSP: Hover documentation |
+| `grn` | n | LSP: Rename symbol |
+| `gra` | n/x | LSP: Code action |
+| `grr` | n | LSP: Find references |
+| `gri` | n | LSP: Go to implementation |
+| `gO` | n | LSP: Document symbols (loclist) |
+| `<leader>sd` | n | LSP: Show diagnostics in floating window |
 | `<C-h/j/k/l>` | n | Navigate between Neovim/tmux panes |
 | `F5` | n | DAP: Start/continue debug |
 | `<leader>b` | n | DAP: Toggle breakpoint |
