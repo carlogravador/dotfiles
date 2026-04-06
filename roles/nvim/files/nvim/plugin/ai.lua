@@ -66,11 +66,11 @@ require("sidekick.cli.watch").enable()
 local map = vim.keymap.set
 
 map({ "n", "t", "i", "x" }, "<c-.>", function()
-  require("sidekick.cli").focus({ name = "copilot" })
+  require("sidekick.cli").focus()
 end, { desc = "Sidekick Focus" })
 
 map("n", "<leader>aa", function()
-  require("sidekick.cli").toggle({ name = "copilot", focus = true })
+  require("sidekick.cli").toggle()
 end, { desc = "Sidekick Toggle" })
 
 map("n", "<leader>as", function()
