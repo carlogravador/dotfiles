@@ -1,0 +1,9 @@
+---
+# roles/wezterm/tasks/main.yml — Entry point for wezterm role tasks
+# Includes install.yml and config.yml
+
+- name: Include install tasks
+  include_tasks: install.yml
+
+- name: Include config tasks
+  include_tasks: config.yml
