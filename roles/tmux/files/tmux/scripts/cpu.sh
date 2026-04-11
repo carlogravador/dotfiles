@@ -11,10 +11,9 @@ elif [ "$OS" = "Linux" ]; then
     cpu_idle=$(awk '/^cpu / {
         idle=$5
         total=0
-        for(i=2;i<=NF;i++) {
-            total+=$i
-        }
-        printf "%.0f", (idle / total) * 100
-    }' /proc/stat)
-
+        for(i=2;i<=NF;i++) total+=$i
+        printf "%.0f", (idle/total)*100
+    }' /proc/stat) 
+    cpu_used=$((100 - cpu_idle))
+    echo "${cpu_used}%"
 fi

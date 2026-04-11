@@ -68,8 +68,12 @@
     - curl
     - clangd
     - libfuse2 # Required by AppImage runtime
+    - python3
+    - python3-full
+    - python3-pip      # for other LSPs
   become: true
   when: ansible_os_family == "Debian"
+
 
 # Query the GitHub Releases API to discover the latest stable Neovim version.
 # "register" saves the HTTP response body so later tasks can read it.

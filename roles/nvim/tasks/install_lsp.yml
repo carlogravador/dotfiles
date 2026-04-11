@@ -16,12 +16,13 @@
   become: true
   changed_when: true
 
-- name: Install cmake-language-server via pip (Debian/Ubuntu)
-  ansible.builtin.pip:
-    name: cmake-language-server
-    state: present
-    executable: pip3
-  when: ansible_os_family == "Debian"
+# Install manually
+# - name: Install cmake-language-server via pip (Debian/Ubuntu)
+#   ansible.builtin.pip:
+#     name: cmake-language-server
+#     state: present
+#     executable: pip3
+#   when: ansible_os_family == "Debian"
 
 # ── lua-language-server (GitHub release) ─────────────────────
 #
